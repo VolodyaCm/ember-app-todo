@@ -4,6 +4,13 @@ import EmberObject from '@ember/object';
 const list = EmberObject.extend({}).create({});
 
 const Task = EmberObject.extend({
+        isCompleted() {
+            if(this.completed) {
+                this.completed = false;
+            }else {
+                this.completed = true;
+            }
+      },
       deleteTask(id) {
         list.set(id, undefined);
         delete list[id];
