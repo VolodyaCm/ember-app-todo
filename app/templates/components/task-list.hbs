@@ -7,10 +7,18 @@
                     <div class="input-group mb-3">
                     <div class="input-group-prepend">
                         <div class="input-group-text">
-                            <input type="checkbox" aria-label="Checkbox for following text input">
+                            {{input type='checkbox' checked=value.completed click=value.isCompleted class="task-checkbox" aria-label="Checkbox for following text input"}}
                         </div>
                     </div>
-                        <textarea class="form-control" aria-label="With textarea" rows="1 ">{{value.task}}</textarea>
+                        {{#if value.completed}}
+                            <div class="row completedTaskBlock">
+                                <div class="col">
+                                    <strike>{{value.task}}</strike>
+                                </div>
+                            </div>
+                        {{else}}
+                            <textarea class="form-control" aria-label="With textarea" rows="1 ">{{value.task}}</textarea>
+                        {{/if}}
                         <div class="input-group-append">
                             {{input type="button" class="btn deleteTaskButton" click=(action "deleteTask" value.deleteTask key) value="✕"}}
                         </div>
