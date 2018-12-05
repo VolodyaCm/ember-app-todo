@@ -10,6 +10,7 @@ const Task = EmberObject.extend({
 export default Controller.extend({
     id: 0,
     task: '',
+    list: list,
     actions: {
         addtask() {
             const _id = this.id++;
