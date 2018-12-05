@@ -1,1 +1,26 @@
+
+{{#each-in list as |key value|}}
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            <input type="checkbox" aria-label="Checkbox for following text input">
+                        </div>
+                    </div>
+                        <textarea class="form-control" aria-label="With textarea" rows="1 ">{{value.task}}</textarea>
+                        <div class="input-group-append">
+                            <button type="button" class="btn deleteTaskButton">&#215;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{{else}}
+    no obj
+{{/each-in}}
+
 {{yield}}
