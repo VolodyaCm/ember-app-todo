@@ -1,4 +1,24 @@
 import Controller from '@ember/controller';
+import EmberObject from '@ember/object';
+
+const list = EmberObject.extend({}).create({});
+
+const Task = EmberObject.extend({
+
+});
 
 export default Controller.extend({
+    id: 0,
+    task: '',
+    actions: {
+        addtask() {
+            const _id = this.id++;
+            list.set(_id, Task.create({
+                completed: false,
+                task: this.task,
+            }));
+            console.log(list);
+        }
+    }
+
 });
