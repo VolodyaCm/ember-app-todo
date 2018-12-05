@@ -12,7 +12,7 @@
                     </div>
                         <textarea class="form-control" aria-label="With textarea" rows="1 ">{{value.task}}</textarea>
                         <div class="input-group-append">
-                            <button type="button" class="btn deleteTaskButton">&#215;</button>
+                            {{input type="button" class="btn deleteTaskButton" click=(action "deleteTask" value.deleteTask key) value="✕"}}
                         </div>
                     </div>
                 </div>
