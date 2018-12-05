@@ -1,1 +1,5 @@
 @import "bootstrap";
+
+.deleteTaskButton {
+    border: 1px solid #ced4da;
+}
