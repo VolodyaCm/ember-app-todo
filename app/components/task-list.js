@@ -7,9 +7,7 @@ export default Component.extend({
     }),
     actions: {
         deleteTask(arg, id) {
-            if(confirm('Delete this task?')) {
                 arg(id);
-            };
         }
     }
 }).reopenClass({
