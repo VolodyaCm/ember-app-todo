@@ -4,7 +4,7 @@ import EmberObject from '@ember/object';
 const list = EmberObject.extend({}).create({});
 
 const Task = EmberObject.extend({
-        isCompleted() {
+      isCompleted() {
             if(this.completed) {
                 this.completed = false;
             }else {
