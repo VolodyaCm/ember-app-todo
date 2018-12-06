@@ -1,11 +1,22 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col">
-            {{task-list list}}
+            <h4>All tasks: {{id}}</h4>
+        </div>
+        <div class="col">
+            <h4>Active tasks: {{active}}</h4>
+        </div>
+        <div class="col">
+            <h4>Completed tasks: {{passive}}</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            {{task-list list (action "changeId") (action "changeActive") (action "changePassive")}}
         </div>
         <div class="col-5">
             {{#add-task (action "addtask")}}
-                {{input value=task}}
+                {{input value=task class="form-control" aria-label="Recipient's username" aria-describedby="basic-addon2"}}
             {{/add-task}}
         </div>
     </div>
