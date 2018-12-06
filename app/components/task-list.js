@@ -9,7 +9,7 @@ export default Component.extend({
         deleteTask(arg, id) {
             if(confirm('Delete this task?')) {
                 arg(id);
-            };
+            }
         }
     }
 }).reopenClass({
