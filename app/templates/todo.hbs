@@ -22,6 +22,11 @@
                     {{/add-task}}
                 </div>
             </div>
+            <div class="row">
+                <div class="col">
+                    {{input type='button' class="btn btn-outline-secondary" click=(action "deleteCompletedTask") value="delete completed tasks"}}
+                </div>
+            </div>
         </div>
     </div>
 </div>
