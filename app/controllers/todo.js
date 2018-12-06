@@ -62,7 +62,17 @@ export default Controller.extend({
             if(this.passive && list[id].completed) {
                 this.set('passive', this.passive - 1);
             }
-        }
+        },
+
+        deleteCompletedTask() {
+            if(confirm(`Delete tasks?`)) {
+                for(let key in list) {
+                    if(list[key].completed) {
+                        delete list[key].deleteTask(key);
+                    }
+                }
+            }
+        },
     }
 
 });
