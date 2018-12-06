@@ -15,9 +15,13 @@
             {{task-list list (action "changeId") (action "changeActive") (action "changePassive") (action "deleteDataTask")}}
         </div>
         <div class="col-5">
-            {{#add-task (action "addtask")}}
-                {{input value=task class="form-control" aria-label="Recipient's username" aria-describedby="basic-addon2"}}
-            {{/add-task}}
+            <div class="row">
+                <div class="col">
+                    {{#add-task (action "addtask")}}
+                        {{input value=task class="form-control" aria-label="Recipient's username" aria-describedby="basic-addon2"}}
+                    {{/add-task}}
+                </div>
+            </div>
         </div>
     </div>
 </div>
