@@ -17,7 +17,7 @@
                                 </div>
                             </div>
                         {{else}}
-                            <textarea class="form-control" aria-label="With textarea" rows="1 ">{{value.task}}</textarea>
+                            {{textarea class="form-control" aria-label="With textarea" rows="1" value=value.task }}
                         {{/if}}
                         <div class="input-group-append">
                             {{input type="button" class="btn deleteTaskButton" click=(action "deleteTask" value.deleteTask key) value="✕"}}
