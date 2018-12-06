@@ -52,6 +52,16 @@ export default Controller.extend({
             }else {
                 this.set('passive', this.passive - 1);
             }
+        },
+
+        deleteDataTask(id) {
+            console.log(this.passive && list[id].completed);
+            if(this.active && !(list[id].completed)) {
+                this.set('active', this.active - 1);
+            };
+            if(this.passive && list[id].completed) {
+                this.set('passive', this.passive - 1);
+            }
         }
     }
 
