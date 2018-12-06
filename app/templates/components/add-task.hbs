@@ -1,2 +1,6 @@
-{{yield}}
-{{input type="button" value="Add" click=addtask}}
+<div class="input-group mb-3">
+  {{yield}}
+  <div class="input-group-append">
+    {{input class="btn btn-outline-secondary" type="button" value="Add" click=addtask }}
+  </div>
+</div>
