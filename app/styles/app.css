@@ -4,6 +4,12 @@
     border: 1px solid #ced4da;
 }
 
+input[type="text"], textarea, input[type="button"]{
+    outline: none;
+    box-shadow:none !important;
+    border:1px solid #ccc !important;
+}
+
 .completedTaskBlock {
     height: 38px;
     width: 1%;
