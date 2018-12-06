@@ -14,13 +14,15 @@ export default Component.extend({
     changePassive: computed('params.[]', function(){
         return this.params[3];
     }),
+    deleteDataTask: computed('params.[]', function() {
+        return this.params[4];
+    }),
     actions: {
         deleteTask(arg, id) {
             if(confirm('Delete this task?')) {
+                this.deleteDataTask(id);
                 arg(id);
-                this.changeId();
-                this.changeActive();
-                this.changePassive();
+                this.changeId(id);
             };
         },
         completed(changeStatus, id) {
