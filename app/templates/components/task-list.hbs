@@ -1,4 +1,3 @@
-
 {{#each-in list as |key value|}}
     <div class="row">
         <div class="col">
@@ -7,7 +6,7 @@
                     <div class="input-group mb-3">
                     <div class="input-group-prepend">
                         <div class="input-group-text">
-                            {{input type='checkbox' checked=value.completed click=(action "completed" value.isCompleted key) class="task-checkbox" aria-label="Checkbox for following text input"}}
+                            {{input type='checkbox' checked=value.completed click=(action "completed" key) class="task-checkbox" aria-label="Checkbox for following text input"}}
                         </div>
                     </div>
                         {{#if value.completed}}
@@ -17,10 +16,10 @@
                                 </div>
                             </div>
                         {{else}}
-                            {{textarea class="form-control" aria-label="With textarea" rows="1" value=value.task }}
+                            {{textarea class="form-control" aria-label="With textarea" rows="1" value=value.task input=saveTask}}
                         {{/if}}
                         <div class="input-group-append">
-                            {{input type="button" class="btn deleteTaskButton" click=(action "deleteTask" value.deleteTask key) value="✕"}}
+                            {{input type="button" class="btn deleteTaskButton" click=(action "deleteTask" key) value="✕"}}
                         </div>
                     </div>
                 </div>
