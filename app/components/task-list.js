@@ -5,6 +5,9 @@ export default Component.extend({
     list: computed('params.[]', function(){
         return this.params[0];
     }),
+    stats: computed('params.[]', function() {
+        return this.params[5];
+    }),
     changeId: computed('params.[]', function(){
         return this.params[1];
     }),
@@ -17,17 +20,26 @@ export default Component.extend({
     deleteDataTask: computed('params.[]', function() {
         return this.params[4];
     }),
+    deleteTask: computed('params.[]', function() {
+        return this.params[6];
+    }),
+    isCompleted: computed('params.[]', function() {
+        return this.params[7];
+    }),
+    saveTask: computed('params.[]', function() {
+        return this.params[8];
+    }),
     actions: {
-        deleteTask(arg, id) {
+        deleteTask(id) {
             if(confirm('Delete this task?')) {
                 this.deleteDataTask(id);
-                arg(id);
+                this.deleteTask(id);
                 this.changeId(id);
             };
         },
-        completed(changeStatus, id) {
+        completed(id) {
             console.log(id);
-            changeStatus(id);
+            this.isCompleted(id);
             this.changeActive(id);
             this.changePassive(id);
         }
