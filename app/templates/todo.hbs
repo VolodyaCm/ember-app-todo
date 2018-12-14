@@ -1,33 +1,118 @@
-<div class="container-fluid">
-    <div class="row">
-        <div class="col">
-            <h4>All tasks: {{id}}</h4>
-        </div>
-        <div class="col">
-            <h4>Active tasks: {{active}}</h4>
-        </div>
-        <div class="col">
-            <h4>Completed tasks: {{passive}}</h4>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            {{task-list list (action "changeId") (action "changeActive") (action "changePassive") (action "deleteDataTask") stats (action "deleteTask") (action "isCompleted") (action "saveTask")}}
-        </div>
-        <div class="col-5">
+<div class="wrapper">
+        <!-- Sidebar  -->
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <h3>Todo</h3>
+                <strong>TD</strong>
+            </div>
+            <ul class="list-unstyled components">
             <div class="row">
-                <div class="col">
-                    {{#add-task (action "addtask")}}
-                        {{input value=task class="form-control" aria-label="Recipient's username" aria-describedby="basic-addon2"}}
-                    {{/add-task}}
+                 <div class="col">
+                    <li>
+                        <a href="#">
+                            Main group
+                        </a>
+                    </li>
+                </div>
+             </div>
+            </ul>
+            <ul class="list-unstyled CTAs">
+                <li>
+                    <a href="#" class="article">
+                        <div class="row">
+                            <div class="col">
+                                {{input type='button' class="btn btn-outline-secondary" click=(action "deleteCompletedTask") value="delete completed tasks"}}
+                            </div>
+                        </div>
+                    </a>
+
+                </li>
+                <li>
+                    <a href="#" class="article">Back to article</a>
+                </li>
+            </ul>
+            <ul class="list-unstyled CTAs">
+                <li>
+                    <a href="#" class="article">Import</a>
+                </li>
+                <li>
+                    <a href="#" class="article">Export</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Page Content  -->
+        <div id="content">
+
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+
+                    <button type="button" id="sidebarCollapse" class="btn btn-info">
+                        <span>Groups</span>
+                    </button>
+                    <button class="btn btn-dark d-inline-block d-lg-none ml-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="nav navbar-nav ml-auto">
+                            <li class="nav-item active">
+                                <a class="nav-link" href="#">Page</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Page</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Page</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Page</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="row task-conteiner">
+                <div class="col-5">
+                    <div class="container">
+
+                    </div>
+                </div>
+                <div class="col task-list-block">
+                    <div class="card task-list-block-scroll square scrollbar-pink bordered-pink thin">
+                        <div class="card-body">
+                            {{task-list list (action "changeId") (action "changeActive") (action "changePassive") (action "deleteDataTask") stats (action "deleteTask") (action "isCompleted") (action "saveTask")}}
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col">
-                    {{input type='button' class="btn btn-outline-secondary" click=(action "deleteCompletedTask") value="delete completed tasks"}}
+
+            <div class="container-fluid controll-panel-container fixed-bottom">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col left-margin-col">
+
+                        </div>
+                        <div class="col">
+                            <div class="row controll-panel-row">
+                                <div class="col-5 col-add-new-group-input">
+                                    {{input class="form-control add-new-task-input" aria-label="Recipient's username" aria-describedby="basic-addon2" placeholder="Add a sub group"}}
+                                    
+                                </div>
+                                <div class="col task-controll-panel">
+                                        <div class="row">
+                                        <div class="col col-new-task-input">
+                                            {{#add-task (action "addtask")}}
+                                                {{input value=task class="form-control add-new-task-input" aria-label="Recipient's username" aria-describedby="basic-addon2" placeholder="Add a task"}}
+                                            {{/add-task}}
+                                        </div>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+            
         </div>
     </div>
-</div>
-{{outlet}}
