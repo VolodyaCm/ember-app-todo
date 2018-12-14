@@ -8,6 +8,7 @@
 
 body {
     height: 100vh;
+    background: #fafafa;
 }
 
 input[type="text"], textarea, input[type="button"]{
@@ -125,6 +126,10 @@ textarea {
 .add-new-group-input {
     color: rgb(240, 239, 239) !important;
     border-color: #de8989;
+}
+
+.add-new-group-input::placeholder {
+    color:silver;
 }
 
 .add-new-task-button {
@@ -290,6 +295,7 @@ textarea {
 
 #sidebar ul li a {
     text-align: left;
+    color: #fff;
 }
 
 #sidebar.active ul li a {
