@@ -142,6 +142,27 @@ textarea {
     border: none;
 }
 
+/* task list style */
+
+.task-list-block {
+    margin: 30px;
+    background: #fff;
+    border-radius: 1px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.groups-list-block, .task-list-block-scroll {
+    position: relative;
+    overflow-y: scroll;
+    background: none;
+    border: none;
+}
+
+.task-list-block-scroll {
+    max-height: 560px !important;
+} 
+
 
 /* sidebar style */
 .wrapper {
