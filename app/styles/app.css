@@ -64,6 +64,34 @@ textarea {
 
 
 /* task control elements  */
+.controll-panel-container, .task-controll-panel {
+    padding: 10px;
+    bottom: 0;
+    z-index: 2;
+}
+
+.controll-panel-container {
+    position: fixed;
+    right: 0;
+    bottom: 10px;
+}
+
+.left-margin-col {
+    min-width: 250px;
+    max-width: 250px;
+}
+
+.controll-panel-row {
+    box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.13);
+    background: #fff;
+    
+}
+
+.col-add-new-group-input {
+    display: flex;
+    align-items: center;
+}
+
 .add-new-task-input {
     padding: 24px 10px 24px 10px;
     left: 25px;
@@ -73,6 +101,25 @@ textarea {
     border-bottom: 2px solid #666;
     border-radius: 0 !important;
     background: none !important;
+}
+
+.task-input-group-append {
+    margin-bottom: 0 !important;
+}
+
+.add-new-task-btn {
+    z-index: 10;
+    font-size: 30px;
+    color: #da7e7e;
+    padding: 1px;
+}
+
+.add-new-task-btn:hover {
+    color: #d46b6b;
+}
+
+.add-new-task-btn:hover {
+    cursor: pointer;
 }
 
 .add-new-group-input {
