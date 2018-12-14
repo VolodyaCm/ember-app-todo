@@ -158,13 +158,13 @@
                                     
                                 </div>
                                 <div class="col task-controll-panel">
-                                        <div class="row">
+                                    <div class="row">
                                         <div class="col col-new-task-input">
                                             {{#add-task (action "addtask")}}
-                                                {{input value=task class="form-control add-new-task-input" aria-label="Recipient's username" aria-describedby="basic-addon2" placeholder="Add a task"}}
+                                                {{input value=task class="form-control add-new-task-input" aria-label="Recipient's username" aria-describedby="basic-addon2" placeholder="Add a task" keyDown=(action "pressEnter" (action "addtask"))}}
                                             {{/add-task}}
                                         </div>
-                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
