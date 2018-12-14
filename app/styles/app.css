@@ -159,9 +159,23 @@ textarea {
     border: none;
 }
 
+.groups-list-block {
+    max-height: 400px;
+}
+
 .task-list-block-scroll {
     max-height: 560px !important;
 } 
+
+
+/* task container  style */
+.task-conteiner {
+    background: #e9ecef;
+    border-radius: 1px;
+    margin: 4px;
+    max-height: 755px;
+    box-shadow: 0 0 10px 1px #0000002b;
+}
 
 
 /* sidebar style */
