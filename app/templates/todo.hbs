@@ -68,8 +68,8 @@
             <ul class="list-unstyled CTAs">
                 <div class="row task-controll-panel">
                     <div class="col">
-                        {{input value class="form-control add-new-group-input add-new-task-input" aria-label="Recipient's
-                        username" aria-describedby="basic-addon2" placeholder="Add a group"}}
+                        {{input value=group class="form-control add-new-group-input add-new-task-input" aria-label="Recipient's
+                        username" aria-describedby="basic-addon2" placeholder="Add a group" keyDown=(action "addGroup")}}
                     </div>
                 </div>
             </ul>
@@ -154,7 +154,7 @@
                         <div class="col">
                             <div class="row controll-panel-row">
                                 <div class="col-5 col-add-new-group-input">
-                                    {{input class="form-control add-new-task-input" aria-label="Recipient's username" aria-describedby="basic-addon2" placeholder="Add a sub group"}}
+                                    {{input value=subgroup class="form-control add-new-task-input" aria-label="Recipient's username" aria-describedby="basic-addon2" placeholder="Add a sub group" keyDown=(action "addSubgroup")}}
                                     
                                 </div>
                                 <div class="col task-controll-panel">
