@@ -118,5 +118,12 @@ export default Controller.extend({
         saveTask() {
             this.set('stats.tasks', list);
         },
+
+        pressEnter(addtask, e) {
+            if(e.keyCode == 13) {
+                console.log(e.keyCode);
+                addtask();
+            }
+        }
     },
 });
