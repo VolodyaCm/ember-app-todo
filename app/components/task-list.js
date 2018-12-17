@@ -2,8 +2,16 @@ import Component from '@ember/component';
 import { computed } from '@ember/object';
 
 export default Component.extend({
-    list: computed('params.[]', function(){
-        return this.params[0];
+    location: computed('params.[]', function() {
+        return this.params[9];
+    }),
+    list: computed('params.[]', 'location.{group,subgroup}', function() {
+        console.log('---changet list');
+        if(this.location.subgroup) {
+            return this.params[0].get(this.location.group).get('subgroups').get(this.location.subgroup).get('tasks');
+        }else {
+            return this.params[0].get(this.location.group).get('subgroups')
+        }
     }),
     stats: computed('params.[]', function() {
         return this.params[5];
@@ -42,7 +50,12 @@ export default Component.extend({
             this.isCompleted(id);
             this.changeActive(id);
             this.changePassive(id);
-        }
+        },
+
+        cLog() {
+            console.log(this.list);
+            console.log(this.location);
+        },
     }
 }).reopenClass({
     positionalParams: 'params',
