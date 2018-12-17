@@ -37,7 +37,28 @@ export default Controller.extend({
         
         // this.set('location.group', `g_${generateId()}`);
         // this.set('location.subgroup', `sg_${generateId()}`);
-    });
+        });
+
+        const g_id = 'g_00000000001';
+        const sg_id = 'sg_0000000001';
+
+        list.set(g_id, Group.create({
+            group: 'Main group',
+            subgroups: EmberObject.extend({}).create({}),
+        }));
+
+        list.get(g_id).get('subgroups').set(sg_id, Subgroup.create({
+            subgroup: 'Main subgroup',
+            tasks: EmberObject.extend({}).create({}),
+        }));
+
+        // list.get(g_id).get('subgroups').get(sg_id).get('tasks').set(`t_${generateId()}`, Task.create({
+        //     completed: false,
+        //     task: 'rand',
+        // }));
+
+        console.log(list);
+
     },
     stats: storageFor('stats'),
     location: {
@@ -57,9 +78,10 @@ export default Controller.extend({
                 const _id = `g_${generateId()}`;
                 list.set(_id, Group.create({
                     group: this.group,
-                    subgroups: {},
+                    subgroups: EmberObject.extend({}).create({}),
                 }));
-                this.location.group = _id;
+                this.set('location.group', _id);
+                this.set('location.subgroup', undefined);
                 console.log(list);
             }
         },
@@ -68,11 +90,11 @@ export default Controller.extend({
             if(e.keyCode == 13) {
                 const _id = `sg_${generateId()}`;
                 const g_id  = this.get('location.group');
-                list.get(g_id).subgroups[_id] = Subgroup.create({
+                list.get(g_id).subgroups.set(_id, Subgroup.create({
                     subgroup: this.subgroup,
-                    tasks: {},
-                });
-                this.location.subgroup = _id;
+                    tasks: EmberObject.extend({}).create({}),
+                }));
+                this.set('location.subgroup', _id);
                 console.log(list);
             }
         },
@@ -90,12 +112,13 @@ export default Controller.extend({
             //         task: tasks[el].task,
             //     }));
             // });
-            list.get(g_id).subgroups[sg_id].tasks[_id] = Task.create({
+            list.get(g_id).get('subgroups').get(sg_id).get('tasks').set(_id, Task.create({
                 completed: false,
                 task: this.task,
-            });
+            }));
             this.set('stats.tasks', list);
             console.log(list);
+            console.log(this.location);
         },
 
         changeId() {
@@ -170,5 +193,15 @@ export default Controller.extend({
                 addtask();
             }
         },
+
+        saveLocation(key) {
+            this.set('location.group', key);
+            this.set('location.subgroup', Object.keys(list[key].subgroups)[0]);
+            console.log(this.location);
+        },
+
+        saveLocationForSubgroup(key) {
+            this.set('location.subgroup', key);
+        }
     },
 });
