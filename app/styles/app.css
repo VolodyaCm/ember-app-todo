@@ -27,7 +27,6 @@ textarea {
     display: flex;
     flex-direction: column;
     margin: 10px;
-    border-radius: 3px;
     border-bottom: 2px solid silver;
     background: #fff;
 }
@@ -149,15 +148,15 @@ textarea {
 
 /* task list style */
 
-.task-list-block {
+.task-list-block, .subgroup-list-block {
     margin: 30px;
-    background: #fff;
     border-radius: 1px;
     padding-top: 20px;
     padding-bottom: 20px;
+
 }
 
-.groups-list-block, .task-list-block-scroll {
+.groups-list-block, .task-list-block-scroll, .subgroup-list-block-scroll {
     position: relative;
     overflow-y: scroll;
     background: none;
@@ -168,7 +167,7 @@ textarea {
     max-height: 400px;
 }
 
-.task-list-block-scroll {
+.task-list-block-scroll, .subgroup-list-block-scroll {
     max-height: 560px !important;
 } 
 
@@ -543,7 +542,9 @@ a.article:hover {
     .thin::-webkit-scrollbar {
     width: 6px; }
     
-    .groups-list-block, .task-list-block-scroll {
+
+
+    .groups-list-block, .task-list-block-scroll, .subgroup-list-block-scroll {
         position: relative;
         overflow-y: scroll;
         background: none;
@@ -555,6 +556,41 @@ a.article:hover {
         max-height: 400px;
     }
 
-    .task-list-block-scroll {
+    .task-list-block-scroll, .subgroup-list-block-scroll {
         max-height: 560px !important;
-    } 
+        background: #fff;
+    }
+
+    /* subgrouop list style */
+    .subgroup-list-block {
+        background: none;
+        margin: 0;
+        padding: 0;
+        background: #fff;
+    }
+
+    .subgroup-item {
+        height: 60px;
+        background: #fff;
+        margin: 10px;
+        color: #222;
+    }
+
+    .subgroup-item:hover {
+        border-bottom: 1px solid #545b62;
+        box-sizing: border-box;
+        cursor: pointer;
+    }
+
+    .subgroup-list-block-scroll {
+        background: none;
+    }
+
+    .active-g {
+        background: #fff;
+        color: #7386D5 !important;
+    }
+
+    .active-sg {
+        background: #f1f1f1;
+    }
