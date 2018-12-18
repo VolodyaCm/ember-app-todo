@@ -570,20 +570,22 @@ a.article:hover {
     }
 
     .subgroup-item {
-        height: 60px;
+        height: auto;
         background: #fff;
         margin: 10px;
         color: #222;
+        border-radius: 4px;
+        padding: 5px;
     }
 
     .subgroup-item:hover {
-        border-bottom: 1px solid #545b62;
         box-sizing: border-box;
         cursor: pointer;
     }
 
     .subgroup-list-block-scroll {
         background: none;
+        max-height: 660px !important;
     }
 
     .active-g {
