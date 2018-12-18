@@ -6,9 +6,9 @@ import { storageFor } from 'ember-local-storage';
 let list = EmberObject.extend({}).create({});
 
 const Task = EmberObject.extend({
-    deleteTask(id) {
-        list.set(id, undefined);
-        delete list[id];
+    deleteTask(id, tasks) {
+        tasks.set(id, undefined);
+        delete tasks[id];
     }
 });
 
@@ -45,11 +45,13 @@ export default Controller.extend({
         list.set(g_id, Group.create({
             group: 'Main group',
             subgroups: EmberObject.extend({}).create({}),
+            active: true,
         }));
 
         list.get(g_id).get('subgroups').set(sg_id, Subgroup.create({
             subgroup: 'Main subgroup',
             tasks: EmberObject.extend({}).create({}),
+            active: true,
         }));
 
         // list.get(g_id).get('subgroups').get(sg_id).get('tasks').set(`t_${generateId()}`, Task.create({
@@ -76,9 +78,13 @@ export default Controller.extend({
         addGroup(e) {
             if(e.keyCode == 13) {
                 const _id = `g_${generateId()}`;
+                Object.keys(list).forEach(el => {
+                    list.get(el).set('active', false);
+                });
                 list.set(_id, Group.create({
                     group: this.group,
                     subgroups: EmberObject.extend({}).create({}),
+                    active: true,
                 }));
                 this.set('location.group', _id);
                 this.set('location.subgroup', undefined);
@@ -90,9 +96,13 @@ export default Controller.extend({
             if(e.keyCode == 13) {
                 const _id = `sg_${generateId()}`;
                 const g_id  = this.get('location.group');
+                Object.keys(list.get(g_id).get('subgroups')).forEach(el => {
+                    list.get(g_id).get('subgroups').get(el).set('active', false);
+                });
                 list.get(g_id).subgroups.set(_id, Subgroup.create({
                     subgroup: this.subgroup,
                     tasks: EmberObject.extend({}).create({}),
+                    active: true,
                 }));
                 this.set('location.subgroup', _id);
                 console.log(list);
@@ -152,14 +162,16 @@ export default Controller.extend({
 
         deleteCompletedTask() {
             if(confirm(`Delete tasks?`)) {
-                for(let key in list) {
-                    if(list[key].completed) {
-                        delete list[key].deleteTask(key);
+                const tasks = list.get(this.location.group).get('subgroups').get(this.location.subgroup).get('tasks');
+                console.log('tasks', tasks);
+                Object.keys(tasks).forEach(el => {
+                    if(tasks[el].completed) {
+                        delete tasks[el].deleteTask(el, tasks);
                         this.set('passive', this.passive - 1);
                         this.set('id', this.id - 1);
                         this.set('stats.tasks', list);
-                    }
-                }
+                    } 
+                });
             }
         },
 
@@ -197,11 +209,26 @@ export default Controller.extend({
         saveLocation(key) {
             this.set('location.group', key);
             this.set('location.subgroup', Object.keys(list[key].subgroups)[0]);
+            Object.keys(list).forEach(el => {
+                list.get(el).set(`active`, false);
+                Object.keys(list[el].subgroups).forEach(sg => {
+                    list.get(el).get('subgroups').get(sg).set(`active`, false);
+                });
+            });
+            list.get(key).set(`active`, true);
+            
+            list.get(key).get('subgroups').get(Object.keys(list.get(key).get('subgroups'))[0]).set(`active`, true);
             console.log(this.location);
         },
 
-        saveLocationForSubgroup(key) {
+        saveLocationForSubgroup(key, value) {
             this.set('location.subgroup', key);
+            Object.keys(list).forEach(el => {
+                Object.keys(list[el].subgroups).forEach(sg => {
+                    list.get(el).get('subgroups').get(sg).set(`active`, false);
+                });
+            });
+            value.set('active', true);
         }
     },
 });
