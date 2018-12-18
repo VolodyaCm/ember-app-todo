@@ -40,9 +40,9 @@ export default Component.extend({
     actions: {
         deleteTask(id) {
             if(confirm('Delete this task?')) {
-                this.deleteDataTask(id);
+                // this.deleteDataTask(id);
                 this.deleteTask(id);
-                this.changeId(id);
+                // this.changeId(id);
             };
         },
         completed(id) {

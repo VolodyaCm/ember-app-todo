@@ -125,6 +125,7 @@ export default Controller.extend({
                 }));
                 this.set('location.subgroup', _id);
                 console.log(list);
+                this.set('stats.groups', list);
             }
         },
 
@@ -157,6 +158,7 @@ export default Controller.extend({
                 completed: false,
                 task: this.task,
             }));
+            this.set('stats.groups', list);
             console.log(list);
             console.log(this.location);
         },
@@ -209,8 +211,11 @@ export default Controller.extend({
         },
 
         deleteTask(id) {
-            list.set(id, undefined);
-            delete list[id];
+            console.log(id);
+            const tasks = list.get(this.location.group).get('subgroups').get(this.location.subgroup).get('tasks');
+            tasks.set(id, undefined);
+            delete tasks[id];
+            this.set('stats.groups', list);
         },
 
         isCompleted(id) {
