@@ -26,33 +26,50 @@ function generateId() {
 
 export default Controller.extend({
     init() {
-        const data = this.get('stats.tasks');
-        console.log(this.get('stats.tasks'));
-        Object.keys(data).forEach(el => {
-        list.set(el, Task.create({
-            completed: data[el].completed,
-            task: data[el].task,
-        }));
-        this.set('id', Object.keys(data).length);
-        
-        // this.set('location.group', `g_${generateId()}`);
-        // this.set('location.subgroup', `sg_${generateId()}`);
+        const localSt = this.get('stats.groups');
+        console.log(this.get('stats.groups'));
+        Object.keys(localSt).forEach(el => {
+            list.set(el, Group.create({
+                active: false,
+                group: localSt[el].group,
+                subgroups: EmberObject.extend({}).create({}),
+            }));
+            Object.keys(localSt[el].subgroups).forEach(sg => {
+                list.get(el).get('subgroups').set(sg, Subgroup.create({
+                    active: false,
+                    subgroup: localSt[el].subgroups[sg].subgroup,
+                    tasks: EmberObject.extend({}).create({}),
+                }));
+                if(el == 'g_00000000001' && sg == 'sg_0000000001') {
+                    list[el].active = true;
+                    list[el].subgroups[sg].active = true;
+                };
+                Object.keys(localSt[el].subgroups[sg].tasks).forEach(ts => {
+                        list.get(el).get('subgroups').get(sg).get('tasks').set(ts, Task.create({
+                            completed: localSt[el].subgroups[sg].tasks[ts].completed,
+                            task: localSt[el].subgroups[sg].tasks[ts].task,
+                        }));
+                })
+            });
         });
 
         const g_id = 'g_00000000001';
         const sg_id = 'sg_0000000001';
+        
+        if(!list[g_id]) {
+            list.set(g_id, Group.create({
+                group: 'Main group',
+                subgroups: EmberObject.extend({}).create({}),
+                active: true,
+            }));
+    
+            list.get(g_id).get('subgroups').set(sg_id, Subgroup.create({
+                subgroup: 'Main subgroup',
+                tasks: EmberObject.extend({}).create({}),
+                active: true,
+            }));
+        }
 
-        list.set(g_id, Group.create({
-            group: 'Main group',
-            subgroups: EmberObject.extend({}).create({}),
-            active: true,
-        }));
-
-        list.get(g_id).get('subgroups').set(sg_id, Subgroup.create({
-            subgroup: 'Main subgroup',
-            tasks: EmberObject.extend({}).create({}),
-            active: true,
-        }));
 
         // list.get(g_id).get('subgroups').get(sg_id).get('tasks').set(`t_${generateId()}`, Task.create({
         //     completed: false,
@@ -60,6 +77,7 @@ export default Controller.extend({
         // }));
 
         console.log(list);
+        console.log('location---', this.location);
 
     },
     stats: storageFor('stats'),
@@ -89,6 +107,7 @@ export default Controller.extend({
                 this.set('location.group', _id);
                 this.set('location.subgroup', undefined);
                 console.log(list);
+                this.set('stats.groups', list);
             }
         },
 
@@ -114,19 +133,30 @@ export default Controller.extend({
             const _id = `t_${generateId()}`;
             const g_id = this.get('location.group');
             const sg_id = this.get('location.subgroup');
-            // this.set('active', this.active + 1);
-            // const tasks = this.get('stats.tasks');
-            // Object.keys(tasks).forEach(el => {
-            //     list.set(el, Task.create({
-            //         completed: tasks[el].completed,
-            //         task: tasks[el].task,
+            this.set('active', this.active + 1);
+            // const localSt = this.get('stats.tasks');
+            // Object.keys(localSt).forEach(el => {
+            //     list.set(el, Group.create({
+            //         group: localSt[el].group,
+            //         subgroups: localSt[el].subgroups,
             //     }));
+            //     Object.keys(localSt[el].subgroups).forEach(sg => {
+            //         list.set(`${el}.subgroups.${sg}`, Subgroup.create({
+            //             subgroup: localSt[el].subgroups[sg],
+            //             tasks: localSt[el].subgroups[sg].tasks,
+            //         }));
+            //         Object.keys(localSt[el].subgroups[sg].tasks).forEach(ts => {
+            //             list.set(`${el}.subgroups.${sg}.tasks.${ts}`, Task.create({
+            //                 completed: localSt[el].subgroup[sg].tasks[ts].completed,
+            //                 task: localSt[el].subgroups[sg].tasks[ts].task,
+            //             }));
+            //         })
+            //     });
             // });
             list.get(g_id).get('subgroups').get(sg_id).get('tasks').set(_id, Task.create({
                 completed: false,
                 task: this.task,
             }));
-            this.set('stats.tasks', list);
             console.log(list);
             console.log(this.location);
         },
@@ -169,7 +199,6 @@ export default Controller.extend({
                         delete tasks[el].deleteTask(el, tasks);
                         this.set('passive', this.passive - 1);
                         this.set('id', this.id - 1);
-                        this.set('stats.tasks', list);
                     } 
                 });
             }
@@ -182,16 +211,13 @@ export default Controller.extend({
         deleteTask(id) {
             list.set(id, undefined);
             delete list[id];
-            this.set('stats.tasks', list);
         },
 
         isCompleted(id) {
             if(list.get(id).get("completed")) {
                 list.get(id).set('completed', false);
-                this.set('stats.tasks', list);
             }else {
                 list.get(id).set("completed", true);
-                this.set('stats.tasks', list);
             }
         },
 
