@@ -32,7 +32,7 @@
                             <div class="card-body">
                                 <li>
                                     {{#each-in list as |key value|}}
-                                        <a href="#" onclick={{action "saveLocation" key}}>
+                                        <a href="#" onclick={{action "saveLocation" key}} class="{{if value.active 'active-g'}}">
                                             {{fa-icon "fas fa-briefcase"}}
                                             {{#unless menu}}
                                                 {{value.group}}
