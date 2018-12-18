@@ -1,10 +1,9 @@
+{{!-- {{input type='button' value="console" click=(action 'cLog')}} --}}
 {{#each-in list as |key value|}}
     <div class="row">
         <div class="col">
-            <div class="row">
-                <div class="col">
                     <div class="task-item" id={{key}}>
-                        <div class="row">
+                        <div class="row bg-white">
                             <div class="col">
                                 <div class="input-group mb-3">
                                 <div class="input-group-prepend">
@@ -39,8 +38,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
         </div>
     </div>
 {{else}}
