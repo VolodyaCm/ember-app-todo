@@ -1,9 +1,22 @@
 import Controller from '@ember/controller';
 import EmberObject from '@ember/object';
 import { storageFor } from 'ember-local-storage';
+import subgroupList from '../components/subgroup-list';
 
 
-let list = EmberObject.extend({}).create({});
+let list = EmberObject.extend({
+    activeSubgroup(group) {
+        const groups = Object.keys(this);
+        let subgroup = false;
+            for(let sg of Object.keys(this[group].subgroups)) {
+                if(this[group].subgroups[sg].active) {
+                    subgroup = true;
+                    break;
+                }
+            }
+        return subgroup;
+    },
+}).create({});
 
 const Task = EmberObject.extend({
     deleteTask(id, tasks) {
@@ -168,7 +181,8 @@ export default Controller.extend({
         },
 
         changeActive(id) {
-            if(list.get(id).get('completed')) {
+            const tasks = list.get(this.location.group).get('subgroups').get(this.location.subgroup).get('tasks');
+            if(tasks.get(id).get('completed')) {
                 this.set('active', this.active - 1);
             }else {
                 this.set('active', this.active + 1);
@@ -176,7 +190,8 @@ export default Controller.extend({
         },
 
         changePassive(id) {
-            if(list.get(id).get('completed')) {
+            const tasks = list.get(this.location.group).get('subgroups').get(this.location.subgroup).get('tasks');
+            if(tasks.get(id).get('completed')) {
                 this.set('passive', this.passive + 1);
             }else {
                 this.set('passive', this.passive - 1);
@@ -218,16 +233,29 @@ export default Controller.extend({
             this.set('stats.groups', list);
         },
 
+        deleteSubgroup(id) {
+            const subgroups = list.get(this.location.group).get('subgroups');
+            subgroups.set(id, undefined);
+            delete subgroups[id];
+            if(!list.activeSubgroup(this.location.group)) {
+                this.set('location.subgroup', Object.keys(subgroups)[Object.keys(subgroups).length - 1]);
+                subgroups.get(this.location.subgroup).set('active', true);
+            };
+            this.set('stats.groups', list);
+        },
+
         isCompleted(id) {
-            if(list.get(id).get("completed")) {
-                list.get(id).set('completed', false);
+            const tasks = list.get(this.location.group).get('subgroups').get(this.location.subgroup).get('tasks');
+            if(tasks.get(id).get("completed")) {
+                tasks.get(id).set('completed', false);
             }else {
-                list.get(id).set("completed", true);
-            }
+                tasks.get(id).set("completed", true);
+            };
+            this.set('stats.groups', list);
         },
 
         saveTask() {
-            this.set('stats.tasks', list);
+            this.set('stats.groups', list);
         },
 
         pressEnter(addtask, e) {
@@ -260,6 +288,12 @@ export default Controller.extend({
                 });
             });
             value.set('active', true);
+        },
+
+        cLog() {
+            console.log('location', this.location);
+            console.log('list', list);
+            list.getLs();
         }
     },
 });
