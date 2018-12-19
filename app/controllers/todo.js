@@ -16,6 +16,17 @@ let list = EmberObject.extend({
             }
         return subgroup;
     },
+    activeGroup() {
+        const groups = Object.keys(list);
+        let group = false;
+        for(let gr of groups) {
+            if(list[gr].active) {
+                group = true;
+                break;
+            }
+        }
+        return group;
+    },
 }).create({});
 
 const Task = EmberObject.extend({
@@ -223,6 +234,23 @@ export default Controller.extend({
 
         clearLocalStorage() {
             this.get('stats').clear();
+        },
+
+        deleteGroup(id, event) {
+            event.stopPropagation();
+            if(confirm('Delete this group?')) {
+                list.set(id, undefined);
+                delete list[id];
+                if(!list.activeGroup()) {
+                    const g_id = Object.keys(list)[Object.keys(list).length - 1];
+                    const sg_id = Object.keys(list[g_id].subgroups)[0];
+                    this.set('location.group', g_id);
+                    this.set('location.subgroup', sg_id);
+                    if(sg_id) list.get(g_id).subgroups.get(sg_id).set('active', true);
+                    list.get(g_id).set('active', true);
+                };
+                this.set('stats.groups', list);
+            }
         },
 
         deleteTask(id) {
