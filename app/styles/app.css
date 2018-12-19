@@ -345,8 +345,10 @@ textarea {
 }
 
 #sidebar ul li a:hover {
-    color: #7386D5;
-    background: #fff;
+    color: #fff;
+    background: #49515769;
+    text-decoration: none;
+    border-radius: 3px;
 }
 
 #sidebar ul li a i {
@@ -589,10 +591,48 @@ a.article:hover {
     }
 
     .active-g {
-        background: #fff;
         color: #7386D5 !important;
+        background: #495157;
+        text-decoration: none;
+        border-radius: 3px;
     }
 
     .active-sg {
         background: #f1f1f1;
+    }
+
+    .subgroup-edit-btn {
+        background: #6c757d !important;
+        border: #6c757d !important;
+    }
+
+    .subgroup-edit-btn:hover {
+        background: #535a60 !important;
+    }
+
+    .subgroup-progress-bar {
+        height: 1px !important;
+    }
+
+    .delete-group-button-block {
+        background: none;
+        border: none;
+        padding: 0;
+        margin: 0 auto;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        color: #707e82;
+    }
+
+    .delete-group-button-item {
+        margin: 0 !important;
+    }
+
+    .delete-group-button-block:hover {
+        background: none;
+    }
+
+    .delete-group-button-block:active {
+        background: none;
     }
