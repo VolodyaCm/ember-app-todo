@@ -15,10 +15,19 @@ export default Component.extend({
     saveLocationForSubgroup: computed('params.[]', function() {
         return this.params[2];
     }),
+    deleteSubgroup: computed('params.[]', function() {
+        return this.params[3];
+    }), 
     actions: {
         saveLocation(key, value) {
             this.saveLocationForSubgroup(key, value);
-        }
+        },
+        deleteSubgroup(key, event) {
+            event.stopPropagation();
+            if(confirm('Delete this subgroup?')) {
+                this.deleteSubgroup(key);
+            }
+        } 
     }
 }).reopenClass({
     positionalParams: 'params',
