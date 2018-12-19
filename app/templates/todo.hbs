@@ -6,24 +6,24 @@
                 <strong>TD</strong>
             </div>
             <ul class="list-unstyled components">
-            <div class="row">
-                 <div class="col">
-                    <div class="card groups-list-block square scrollbar-pink bordered-pink thin">
-                        <div class="card-body">
-                            <li>
-                                <a href="#">
-                                    {{fa-icon "fas fa-briefcase"}}
-                                    Main group
-                                </a>
-                                {{!-- <a href="#">
-                                    <i class="fas fa-briefcase"></i>
-                                    About
-                                </a> --}}
-                            </li>
+                <div class="row">
+                    <div class="col">
+                        <div class="card groups-list-block square scrollbar-pink bordered-pink thin">
+                            <div class="card-body">
+                                <li>
+                                    <a href="#">
+                                        {{fa-icon "fas fa-briefcase"}}
+                                        Main group
+                                    </a>
+                                    {{!-- <a href="#">
+                                        <i class="fas fa-briefcase"></i>
+                                        About
+                                    </a> --}}
+                                </li>
+                            </div>
                         </div>
                     </div>
                 </div>
-             </div>
             </ul>
             <ul class="list-unstyled components">
                 <div class="row">
@@ -34,10 +34,14 @@
                                     {{#each-in list as |key value|}}
                                         <a href="#" onclick={{action "saveLocation" key}} class="{{if value.active 'active-g'}}">
                                             {{fa-icon "fas fa-briefcase"}}
+                                            
                                             {{#unless menu}}
                                                 {{value.group}}
                                             {{/unless}}
-                                        </a>  
+                                            <div class="delete" class="btn float-right delete-group-button-block" onclick={{action "deleteGroup" key}}>
+                                                {{fa-icon "fas fa-trash delete-group-button-item"}}
+                                            </div>
+                                        </a>
                                     {{/each-in}}
                                     {{!-- <a href="#">
                                         <i class="fas fa-briefcase"></i>
@@ -92,6 +96,10 @@
                         {{fa-icon "fas fa-align-left"}}
                         <span>Groups</span>
                     </button>
+                    <button type="button" id="sidebarCollapse" class="btn btn-info" onclick={{action "cLog"}}>
+                        {{fa-icon "fas fa-align-left"}}
+                        <span>console</span>
+                    </button>
                     <button class="btn btn-dark d-inline-block d-lg-none ml-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     </button>
 
@@ -116,7 +124,7 @@
 
             <div class="row task-conteiner">
                 <div class="col-5 subgroup-list-block">
-                    {{subgroup-list list location (action "saveLocationForSubgroup")}}
+                    {{subgroup-list list location (action "saveLocationForSubgroup") (action "deleteSubgroup")}}
                 </div>
                 <div class="col task-list-block">
                     <div class="card task-list-block-scroll square scrollbar-pink bordered-pink thin">
