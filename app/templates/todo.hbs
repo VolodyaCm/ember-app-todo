@@ -63,17 +63,9 @@
             </ul>
             <ul class="list-unstyled CTAs">
                 <li>
-                    <a href="#" class="article">
-                        <div class="row">
-                            <div class="col">
-                                {{input type='button' class="btn btn-outline-secondary" click=(action "deleteCompletedTask") value="delete completed tasks"}}
-                            </div>
-                        </div>
+                    <a href="#" class="article" onclick={{action "deleteCompletedTask"}}>
+                        Delete completed tasks
                     </a>
-
-                </li>
-                <li>
-                    <a href="#" class="article">Back to article</a>
                 </li>
             </ul>
             <ul class="list-unstyled CTAs">
