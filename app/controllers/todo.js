@@ -1,8 +1,8 @@
 import Controller from '@ember/controller';
 import EmberObject from '@ember/object';
 import { storageFor } from 'ember-local-storage';
-import subgroupList from '../components/subgroup-list';
-
+import FileSaver from 'file-saver';
+/* global XLSX */
 
 let list = EmberObject.extend({
     activeSubgroup(group) {
