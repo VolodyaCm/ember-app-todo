@@ -111,6 +111,7 @@ export default Controller.extend({
     },
     csvFile: '',
     isShowingExportModal: false,
+    exportCompletedTasks: true,
     group: '',
     subgroup: '',
     task: '',
@@ -336,7 +337,13 @@ export default Controller.extend({
                 for(let sg of Object.keys(list[gr].subgroups)) {
                     csvFile += `,${sg},${list[gr].subgroups[sg].subgroup},${list[gr].subgroups[sg].active}\n`;
                     for(let ts of Object.keys(list[gr].subgroups[sg].tasks)) {
-                        csvFile += `,,${ts},${list[gr].subgroups[sg].tasks[ts].task},${list[gr].subgroups[sg].tasks[ts].completed}\n`;
+                        if(this.get('exportCompletedTasks')) {
+                            csvFile += `,,${ts},${list[gr].subgroups[sg].tasks[ts].task},${list[gr].subgroups[sg].tasks[ts].completed}\n`;
+                        }else {
+                            if(!list[gr].subgroups[sg].tasks[ts].completed) {
+                                csvFile += `,,${ts},${list[gr].subgroups[sg].tasks[ts].task},${list[gr].subgroups[sg].tasks[ts].completed}\n`;
+                            }
+                        }
                     }
                 }
             }
@@ -360,7 +367,13 @@ export default Controller.extend({
                     for(let sg of Object.keys(list[gr].subgroups)) {
                         ws_data.push([,sg,list[gr].subgroups[sg].subgroup,list[gr].subgroups[sg].active]);
                         for(let ts of Object.keys(list[gr].subgroups[sg].tasks)) {
-                            ws_data.push([,,ts,list[gr].subgroups[sg].tasks[ts].task,list[gr].subgroups[sg].tasks[ts].completed]);
+                            if(this.get('exportCompletedTasks')) {
+                                ws_data.push([,,ts,list[gr].subgroups[sg].tasks[ts].task,list[gr].subgroups[sg].tasks[ts].completed]);
+                            }else {
+                                if(!list[gr].subgroups[sg].tasks[ts].completed) {
+                                    ws_data.push([,,ts,list[gr].subgroups[sg].tasks[ts].task,list[gr].subgroups[sg].tasks[ts].completed]);
+                                }
+                            }
                         }
                     }
                 }
