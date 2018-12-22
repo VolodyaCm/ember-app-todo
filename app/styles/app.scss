@@ -637,3 +637,12 @@ a.article:hover {
     .delete-group-button-block:active {
         background: none;
     }
+
+    // modal dialog
+    .ember-modal-dialog {
+        box-shadow: 0 0 100px 1px rgba(0, 0, 0, 0.29);
+    }
+
+    .ember-modal-overlay.translucent {
+        background: rgba(0, 0, 0, 0.49);
+    }
