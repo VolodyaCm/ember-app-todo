@@ -72,8 +72,23 @@
                 <li>
                     <a href="#" class="article">Import</a>
                 </li>
-                <li>
+                <li onclick={{action "openExportModal"}}>
                     <a href="#" class="article">Export</a>
+                     {{#if isShowingExportModal}}
+                        {{#modal-dialog
+                            onClose=(action "toggleModal")
+                            targetAttachment="center"
+                            translucentOverlay=true
+                        }}
+                            <div class="row">
+                                <div class="col">
+                                    <a download="Tasks.csv" href="data:text/plain;charset=UTF-8,{{csvFile}}" class="btn btn-success" onclick={{action "createCSVfile"}}>
+                                        Download CSV
+                                    </a>
+                                </div>
+                            </div>
+                        {{/modal-dialog}}
+                    {{/if}}
                 </li>
             </ul>
         </nav>

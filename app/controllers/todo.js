@@ -109,6 +109,8 @@ export default Controller.extend({
         group: 'g_00000000001',
         subgroup: 'sg_0000000001',
     },
+    csvFile: '',
+    isShowingExportModal: false,
     group: '',
     subgroup: '',
     task: '',
@@ -317,6 +319,30 @@ export default Controller.extend({
             });
             value.set('active', true);
         },
+
+        toggleModal() {
+            this.set('isShowingExportModal', false);
+        },
+
+        openExportModal() {
+            this.set('isShowingExportModal', true);
+        },
+
+        createCSVfile() {
+            let csvFile = '';
+            const groups = Object.keys(list);
+            for(let gr of groups) {
+                csvFile += `${gr},${list[gr].group},${list[gr].active}\n`;
+                for(let sg of Object.keys(list[gr].subgroups)) {
+                    csvFile += `,${sg},${list[gr].subgroups[sg].subgroup},${list[gr].subgroups[sg].active}\n`;
+                    for(let ts of Object.keys(list[gr].subgroups[sg].tasks)) {
+                        csvFile += `,,${ts},${list[gr].subgroups[sg].tasks[ts].task},${list[gr].subgroups[sg].tasks[ts].completed}\n`;
+                    }
+                }
+            }
+            this.set('csvFile', csvFile);
+        },
+        
 
         cLog() {
             console.log('location', this.location);
