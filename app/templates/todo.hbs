@@ -85,6 +85,7 @@
                                     <a download="Tasks.csv" href="data:text/plain;charset=UTF-8,{{csvFile}}" class="btn btn-success" onclick={{action "createCSVfile"}}>
                                         Download CSV
                                     </a>
+                                    <input class="btn btn-success" value="Download XLSX" type="button" onclick={{action "createXLSXfile"}}/>
                                 </div>
                             </div>
                         {{/modal-dialog}}

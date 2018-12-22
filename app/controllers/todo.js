@@ -342,6 +342,42 @@ export default Controller.extend({
             }
             this.set('csvFile', csvFile);
         },
+
+        createXLSXfile() {
+                var wb = XLSX.utils.book_new();
+                wb.Props = {
+                    Title: "Todo app",
+                    Subject: "Tasks",
+                    Author: "Todo",
+                    CreatedDate: new Date()
+                };
+                wb.SheetNames.push("Tasks Sheet");
+                var ws_data = [];
+
+                const groups = Object.keys(list);
+                for(let gr of groups) {
+                    ws_data.push([gr,list[gr].group,list[gr].active]);
+                    for(let sg of Object.keys(list[gr].subgroups)) {
+                        ws_data.push([,sg,list[gr].subgroups[sg].subgroup,list[gr].subgroups[sg].active]);
+                        for(let ts of Object.keys(list[gr].subgroups[sg].tasks)) {
+                            ws_data.push([,,ts,list[gr].subgroups[sg].tasks[ts].task,list[gr].subgroups[sg].tasks[ts].completed]);
+                        }
+                    }
+                }
+
+                var ws = XLSX.utils.aoa_to_sheet(ws_data);
+                wb.Sheets["Tasks Sheet"] = ws;
+                var wbout = XLSX.write(wb, {bookType:'xlsx',  type: 'binary'});
+
+                function s2ab(s) { 
+                    var buf = new ArrayBuffer(s.length); //convert s to arrayBuffer
+                    var view = new Uint8Array(buf);  //create uint8array as viewer
+                    for (var i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF; //convert to octet
+                    return buf;
+                }
+
+                FileSaver.saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), 'Tasks.xlsx');
+        },
         
 
         cLog() {
