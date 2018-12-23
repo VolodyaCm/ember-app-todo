@@ -9,7 +9,10 @@
 
 body {
     height: 100vh;
-    background: #fafafa;
+    // background: #fafafa;
+    background: url(https://images.wallpaperscraft.ru/image/gorod_parizh_eyfeleva_bashnya_boke_fokusirovka_razmytost_58862_2048x1152.jpg);
+    background-size: cover;
+    background-position: top center;
 }
 
 input[type="text"], textarea, input[type="button"]{
@@ -150,10 +153,12 @@ textarea {
 /* task list style */
 
 .task-list-block, .subgroup-list-block {
-    margin: 30px;
+    margin-left: 10px;
     border-radius: 1px;
     padding-top: 20px;
     padding-bottom: 20px;
+    background: #fff;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
 
 }
 
@@ -169,17 +174,15 @@ textarea {
 }
 
 .task-list-block-scroll, .subgroup-list-block-scroll {
-    max-height: 560px !important;
+    max-height: 660px !important;
 } 
 
 
 /* task container  style */
 .task-conteiner {
-    background: #e9ecef;
     border-radius: 1px;
     margin: 4px;
     max-height: 755px;
-    box-shadow: 0 0 10px 1px #0000002b;
 }
 
 
@@ -560,7 +563,7 @@ a.article:hover {
     }
 
     .task-list-block-scroll, .subgroup-list-block-scroll {
-        max-height: 560px !important;
+        max-height: 660px !important;
         background: #fff;
     }
 
