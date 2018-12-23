@@ -69,8 +69,31 @@
                 </li>
             </ul>
             <ul class="list-unstyled CTAs">
-                <li>
+                <li onclick={{action "openImportModal"}}>
                     <a href="#" class="article">Import</a>
+                    {{#if isShowingImportModal}}
+                        {{#modal-dialog
+                            onClose=(action "toggleModal")
+                            targetAttachment="center"
+                            translucentOverlay=true
+                        }}
+                        <div class="row">
+                            <div class="col">
+                                <div class="input-group mb-3">
+                                    <div class="custom-file">
+                                        {{input type="file" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, .csv" class="fileInput custom-file-input" change=(action "importTasks") id="inputGroupFile02"}}
+                                        <label class="custom-file-label" for="inputGroupFile02">Choose file</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {{#if err.fileType.active}}
+                             <div class="alert alert-danger" role="alert">
+                                Import only <strong>CSV</strong> or <strong>XLSX</strong> files!
+                            </div>
+                        {{/if}}
+                        {{/modal-dialog}}
+                    {{/if}}
                 </li>
                 <li onclick={{action "openExportModal"}}>
                     <a href="#" class="article">Export</a>
@@ -99,9 +122,7 @@
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <a download="Tasks.csv" href="data:text/plain;charset=UTF-8,{{csvFile}}" class="btn btn-success" onclick={{action "createCSVfile"}}>
-                                        Download CSV
-                                    </a>
+                                    <input type="button" class="btn btn-success" onclick={{action "createCSVfile"}} value="Download CSV">
                                     <input class="btn btn-success" value="Download XLSX" type="button" onclick={{action "createXLSXfile"}}/>
                                 </div>
                             </div>
@@ -148,10 +169,10 @@
             </nav>
 
             <div class="row task-conteiner">
-                <div class="col-5 subgroup-list-block">
+                <div class="col-4 subgroup-list-block">
                     {{subgroup-list list location (action "saveLocationForSubgroup") (action "deleteSubgroup")}}
                 </div>
-                <div class="col task-list-block">
+                <div class="col-5 task-list-block">
                     <div class="card task-list-block-scroll square scrollbar-pink bordered-pink thin">
                         <div class="card-body">
                             {{task-list list (action "changeId") (action "changeActive") (action "changePassive") (action "deleteDataTask") stats (action "deleteTask") (action "isCompleted") (action "saveTask") location}}
