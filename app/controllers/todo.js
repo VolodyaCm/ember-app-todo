@@ -4,7 +4,46 @@ import { storageFor } from 'ember-local-storage';
 import FileSaver from 'file-saver';
 /* global XLSX */
 
+const Task = EmberObject.extend({
+    deleteTask(id, tasks) {
+        tasks.set(id, undefined);
+        delete tasks[id];
+    }
+});
+
+const Group = EmberObject.extend({
+
+});
+
+const Subgroup = EmberObject.extend({
+
+});
+
 let list = EmberObject.extend({
+    createGroup(key) {
+        this.set(key[0], Group.create({
+            group: key[1],
+            active: false,
+            subgroups: EmberObject.extend({}).create({})
+        }));
+        return key[0];
+    },
+
+    createSubgroup(key, location) {
+        this.get(location.group).get('subgroups').set(key[0], Subgroup.create({
+            subgroup: key[1],
+            active: false,
+            tasks: EmberObject.extend({}).create({})
+        }));
+    },
+
+    createTask(key, location) {
+        this.get(location.group).get('subgroups').get(location.subgroup).get('tasks').set(key[0], Task.create({
+            task: key[1],
+            completed: key[2]
+        }));
+    },
+
     activeSubgroup(group) {
         const groups = Object.keys(this);
         let subgroup = false;
@@ -27,22 +66,34 @@ let list = EmberObject.extend({
         }
         return group;
     },
-}).create({});
 
-const Task = EmberObject.extend({
-    deleteTask(id, tasks) {
-        tasks.set(id, undefined);
-        delete tasks[id];
+    deactivationGroup() {
+        for(let key of Object.keys(list)) {
+            list.get(key).set('active', false);
+        }
+    },
+
+    getSheet(exportCompletedTasks) {
+        const ws_data = [];
+        const groups = Object.keys(this);
+            for(let gr of groups) {
+                ws_data.push([gr,this[gr].group,this[gr].active]);
+                for(let sg of Object.keys(this[gr].subgroups)) {
+                    ws_data.push([sg,this[gr].subgroups[sg].subgroup,this[gr].subgroups[sg].active]);
+                    for(let ts of Object.keys(this[gr].subgroups[sg].tasks)) {
+                        if(exportCompletedTasks) {
+                            ws_data.push([ts,this[gr].subgroups[sg].tasks[ts].task,this[gr].subgroups[sg].tasks[ts].completed]);
+                        }else {
+                            if(!this[gr].subgroups[sg].tasks[ts].completed) {
+                                ws_data.push([ts,this[gr].subgroups[sg].tasks[ts].task,this[gr].subgroups[sg].tasks[ts].completed]);
+                            }
+                        }
+                    }
+                }
+            }
+            return ws_data;
     }
-});
-
-const Group = EmberObject.extend({
-
-});
-
-const Subgroup = EmberObject.extend({
-
-});
+}).create({});
 
 function generateId() {
     return `${Math.floor(Math.random() * 1000000000)}`;
@@ -109,8 +160,14 @@ export default Controller.extend({
         group: 'g_00000000001',
         subgroup: 'sg_0000000001',
     },
+    err: {
+        fileType: {
+            active: false,
+        }
+    },
     csvFile: '',
     isShowingExportModal: false,
+    isShowingImportModal: false,
     exportCompletedTasks: true,
     group: '',
     subgroup: '',
@@ -224,7 +281,6 @@ export default Controller.extend({
         deleteCompletedTask() {
             if(confirm(`Delete tasks?`)) {
                 const tasks = list.get(this.location.group).get('subgroups').get(this.location.subgroup).get('tasks');
-                console.log('tasks', tasks);
                 Object.keys(tasks).forEach(el => {
                     if(tasks[el].completed) {
                         delete tasks[el].deleteTask(el, tasks);
@@ -232,6 +288,7 @@ export default Controller.extend({
                         this.set('id', this.id - 1);
                     } 
                 });
+                this.set('stats.groups', list);
             }
         },
 
@@ -322,32 +379,44 @@ export default Controller.extend({
         },
 
         toggleModal() {
-            this.set('isShowingExportModal', false);
+            if(this.get('isShowingImportModal')) {
+                this.set('err.fileType.active', false);
+                this.set('isShowingImportModal', false);
+            }else if(this.get('isShowingExportModal')) {
+                this.set('isShowingExportModal', false);
+            }
         },
 
         openExportModal() {
             this.set('isShowingExportModal', true);
         },
 
+        openImportModal() {
+            this.set('isShowingImportModal', true);
+        },
+
         createCSVfile() {
-            let csvFile = '';
-            const groups = Object.keys(list);
-            for(let gr of groups) {
-                csvFile += `${gr},${list[gr].group},${list[gr].active}\n`;
-                for(let sg of Object.keys(list[gr].subgroups)) {
-                    csvFile += `,${sg},${list[gr].subgroups[sg].subgroup},${list[gr].subgroups[sg].active}\n`;
-                    for(let ts of Object.keys(list[gr].subgroups[sg].tasks)) {
-                        if(this.get('exportCompletedTasks')) {
-                            csvFile += `,,${ts},${list[gr].subgroups[sg].tasks[ts].task},${list[gr].subgroups[sg].tasks[ts].completed}\n`;
-                        }else {
-                            if(!list[gr].subgroups[sg].tasks[ts].completed) {
-                                csvFile += `,,${ts},${list[gr].subgroups[sg].tasks[ts].task},${list[gr].subgroups[sg].tasks[ts].completed}\n`;
-                            }
-                        }
-                    }
+            var wb = XLSX.utils.book_new();
+                wb.Props = {
+                    Title: "Todo app",
+                    Subject: "Tasks",
+                    Author: "Todo",
+                    CreatedDate: new Date()
+                };
+                wb.SheetNames.push("Tasks Sheet");
+                var ws_data = list.getSheet(this.exportCompletedTasks);
+                var ws = XLSX.utils.aoa_to_sheet(ws_data);
+                wb.Sheets["Tasks Sheet"] = ws;
+                var wbout = XLSX.write(wb, {bookType:'csv',  type: 'binary'});
+
+                function s2ab(s) {
+                    var buf = new ArrayBuffer(s.length);
+                    var view = new Uint8Array(buf);
+                    for (var i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
+                    return buf;
                 }
-            }
-            this.set('csvFile', csvFile);
+
+                FileSaver.saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), 'Tasks.csv');
         },
 
         createXLSXfile() {
@@ -359,44 +428,78 @@ export default Controller.extend({
                     CreatedDate: new Date()
                 };
                 wb.SheetNames.push("Tasks Sheet");
-                var ws_data = [];
-
-                const groups = Object.keys(list);
-                for(let gr of groups) {
-                    ws_data.push([gr,list[gr].group,list[gr].active]);
-                    for(let sg of Object.keys(list[gr].subgroups)) {
-                        ws_data.push([,sg,list[gr].subgroups[sg].subgroup,list[gr].subgroups[sg].active]);
-                        for(let ts of Object.keys(list[gr].subgroups[sg].tasks)) {
-                            if(this.get('exportCompletedTasks')) {
-                                ws_data.push([,,ts,list[gr].subgroups[sg].tasks[ts].task,list[gr].subgroups[sg].tasks[ts].completed]);
-                            }else {
-                                if(!list[gr].subgroups[sg].tasks[ts].completed) {
-                                    ws_data.push([,,ts,list[gr].subgroups[sg].tasks[ts].task,list[gr].subgroups[sg].tasks[ts].completed]);
-                                }
-                            }
-                        }
-                    }
-                }
-
+                var ws_data = list.getSheet(this.exportCompletedTasks);
                 var ws = XLSX.utils.aoa_to_sheet(ws_data);
                 wb.Sheets["Tasks Sheet"] = ws;
                 var wbout = XLSX.write(wb, {bookType:'xlsx',  type: 'binary'});
 
                 function s2ab(s) { 
-                    var buf = new ArrayBuffer(s.length); //convert s to arrayBuffer
-                    var view = new Uint8Array(buf);  //create uint8array as viewer
-                    for (var i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF; //convert to octet
+                    var buf = new ArrayBuffer(s.length);
+                    var view = new Uint8Array(buf);
+                    for (var i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
                     return buf;
                 }
 
                 FileSaver.saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), 'Tasks.xlsx');
         },
+
+        importTasks() {
+            const self = this;
+            const file = document.querySelector('.fileInput').files[0];
+            const reader = new FileReader();
+            this.set('err.fileType.active', false);
+            console.log(file);
+            reader.onload = function(e) {
+
+                const data = XLSX.read(e.target.result, {type: 'binary'});
+                let jsonData;
+
+                if(file.name.slice(-3) == 'csv') {
+                    jsonData = XLSX.utils.sheet_to_json(data.Sheets['Sheet1'], {header:1, raw:true});
+                }else if (file.name.slice(-4) == 'xlsx') {
+                    jsonData = XLSX.utils.sheet_to_json(data.Sheets['Tasks Sheet'], {header:1, raw:true});
+                }else {
+                    self.set('err.fileType.active', true);
+                }
+
+                console.log('DATA', data);
+                console.log('jsonDATA', jsonData);
+
+                if(jsonData) {
+                    for(let key of jsonData) {
+                        if(key[0][0] == 'g') {
+                            if (!list[key[0]]) {
+                                list.createGroup(key);
+                            }
+                            self.set('location.group', key[0]);
+                            self.set('stats.groups', list);
+                        }else if(key[0].split('_')[0] == 'sg') {
+                            if(!list[self.location.group].subgroups[key[0]]) {
+                                list.createSubgroup(key, self.location);
+                            }
+                            self.set('location.subgroup', key[0]);
+                            self.set('stats.groups', list);
+                        }else if (key[0][0] == 't') {
+                            if(!list[self.location.group].subgroups[self.location.subgroup].tasks[key[0]]) {
+                                list.createTask(key, self.location);
+                            }
+                            self.set('stats.groups', list);
+                        }
+                    }
+                    console.log(list);
+                    self.set('location.group', Object.keys(list)[0]);
+                    self.set('location.subgroup', Object.keys(list[Object.keys(list)[0]].subgroups)[0]);
+                }
+            };
+            reader.readAsBinaryString(file);
+        },
         
 
         cLog() {
-            console.log('location', this.location);
+            console.log('location', this.get('location'));
             console.log('list', list);
-            list.getLs();
+            console.log(this.location);
+            console.log(list.getSheet(this.exportCompletedTasks));
         }
     },
 });
