@@ -1,7 +1,7 @@
 <div class="card subgroup-list-block-scroll square scrollbar-pink bordered-pink thin">
-    <div class="card-body">
+    <div class="card-body subgroup-card-body">
         {{#each-in list as |key value|}}
-            <div class="row">
+            <div class="row subgroup-item-row">
                 <div class="col">
                     <div class="subgroup-item {{if value.active 'active-sg'}}" id="{{key}}" onclick={{action "saveLocation" key value}}>
                         <div class="row">

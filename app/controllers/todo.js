@@ -165,6 +165,7 @@ export default Controller.extend({
             active: false,
         }
     },
+    menu: false,
     csvFile: '',
     isShowingExportModal: false,
     isShowingImportModal: false,
@@ -493,7 +494,14 @@ export default Controller.extend({
             };
             reader.readAsBinaryString(file);
         },
-        
+
+        toggleMenu() {
+            if(this.menu) {
+                    this.set('menu', false);
+            }else {
+                this.set('menu', true);
+            }
+        },
 
         cLog() {
             console.log('location', this.get('location'));

@@ -31,7 +31,7 @@ textarea {
     display: flex;
     flex-direction: column;
     margin: 10px;
-    border-bottom: 2px solid silver;
+    border-bottom: 1px solid silver;
     background: #fff;
 }
 
@@ -68,6 +68,14 @@ textarea {
 
 
 /* task control elements  */
+.controll-panel {
+    position: absolute;
+    width: inherit;
+    right: 0;
+    bottom: 0;
+    margin-bottom: 0 !important;
+}
+
 .controll-panel-container, .task-controll-panel {
     padding: 10px;
     bottom: 0;
@@ -157,9 +165,11 @@ textarea {
     border-radius: 1px;
     padding-top: 20px;
     padding-bottom: 20px;
-    background: #fff;
-    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
 
+}
+
+.task-list-block-scroll {
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .groups-list-block, .task-list-block-scroll, .subgroup-list-block-scroll {
@@ -302,7 +312,7 @@ textarea {
 }
 
 #sidebar.active ul li a {
-    padding: 20px 10px;
+    padding: 20px 10px 10px 5px;
     text-align: center;
     font-size: 0.85em;
 }
@@ -413,6 +423,7 @@ a.article:hover {
     padding: 20px;
     min-height: 100vh;
     transition: all 0.3s;
+    position: relative;
 }
 
 /* mediaqueries */
@@ -563,7 +574,7 @@ a.article:hover {
     }
 
     .task-list-block-scroll, .subgroup-list-block-scroll {
-        max-height: 660px !important;
+        max-height: 698px !important;
         background: #fff;
     }
 
@@ -572,7 +583,6 @@ a.article:hover {
         background: none;
         margin: 0;
         padding: 0;
-        background: #fff;
     }
 
     .subgroup-item {
@@ -602,7 +612,10 @@ a.article:hover {
     }
 
     .active-sg {
-        background: #f1f1f1;
+        background: #fff;
+        box-shadow: 0 0 10px 1px #0000003b;
+        transition: .2s;
+
     }
 
     .subgroup-edit-btn {
@@ -643,9 +656,41 @@ a.article:hover {
 
     // modal dialog
     .ember-modal-dialog {
-        box-shadow: 0 0 100px 1px rgba(0, 0, 0, 0.29);
+        box-shadow: 0 0 100px 10px rgba(0, 0, 0, 0.29);
     }
 
     .ember-modal-overlay.translucent {
         background: rgba(0, 0, 0, 0.49);
+    }
+
+    // @media screen and (max-width: 1300px) {
+    //     .task-list-block {
+    //         flex: none;
+    //         max-width: none;
+    //     }
+
+    //     .subgroup-item-row {
+    //         float: left;
+    //     }
+
+    //     .subgroup-list-block {
+    //         flex: none;
+    //         max-width: 100%;
+    //     }
+
+    //     .subgroup-list-block-scroll {
+    //         max-height: 210px !important;
+    //     }
+
+    //     .subgroup-card-body {
+    //         display: flex;
+    //         justify-content: space-around;
+    //         flex-wrap: wrap;
+    //     }
+    // }
+
+    @media screen and (max-width: 768px) {
+        .left-margin-col {
+            display: none;
+        }
     }
