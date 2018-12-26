@@ -1,29 +1,24 @@
-<div class="card subgroup-list-block-scroll square scrollbar-pink bordered-pink thin">
-    <div class="card-body subgroup-card-body">
+<div class="scrollmenu">
         {{#each-in list as |key value|}}
-            <div class="row subgroup-item-row">
-                <div class="col">
                     <div class="subgroup-item {{if value.active 'active-sg'}}" id="{{key}}" onclick={{action "saveLocation" key value}}>
-                        <div class="row">
+                        <div class="row subgroup-item-row">
                             <div class="col">
-                                <div class="row">
-                                    <div class="col">
-                                        {{fa-icon "fas fa-object-group"}} {{value.subgroup}}
-                                    </div>
-                                    <div class="col">
-                                        statistic
+                                <div class="row subgroup-item-row">
+                                    <div class="col h5 c-5f666d">
+                                        {{fa-icon "fas fa-paper-plane"}}
+                                        <span class="badge badge-pill badge-light">{{value.subgroup}}</span>
                                     </div>
                                 </div>
-                                <div class="row float-right">
+                                {{!-- <div class="row float-right">
                                     <div class="col">
                                         {{input type="button" value="edit" class="btn btn-success subgroup-edit-btn"}}
                                         {{input type='button' value='details' class="btn btn-info"}}
                                         {{!-- {{input type='button' value='delete' }} --}}
-                                        <div class="delete" class="btn btn-danger" onclick={{action "deleteSubgroup" key}}>
-                                            {{fa-icon "fas fa-trash"}}
-                                        </div>
-                                    </div>
-                                </div>
+                                        {{!-- <div class="delete" class="btn btn-danger" onclick={{action "deleteSubgroup" key}}>
+                                            {{fa-icon "fas fa-trash"}} --}}
+                                        {{!-- </div> --}}
+                                    {{!-- </div> --}}
+                                {{!-- </div> --}}
                                 <div class="row">
                                     <div class="col">
                                         <div class="progress subgroup-progress-bar">
@@ -34,11 +29,8 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
         {{else}}
             no subgroups
         {{/each-in}}
-    </div>
 </div>
 {{yield}}

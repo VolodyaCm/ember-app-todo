@@ -70,7 +70,7 @@ textarea {
 /* task control elements  */
 .controll-panel {
     position: absolute;
-    width: inherit;
+    width: 100%;
     right: 0;
     bottom: 0;
     margin-bottom: 0 !important;
@@ -161,11 +161,9 @@ textarea {
 /* task list style */
 
 .task-list-block, .subgroup-list-block {
-    margin-left: 10px;
     border-radius: 1px;
-    padding-top: 20px;
-    padding-bottom: 20px;
-
+    margin-top: 20px;
+    padding: 0;
 }
 
 .task-list-block-scroll {
@@ -574,7 +572,7 @@ a.article:hover {
     }
 
     .task-list-block-scroll, .subgroup-list-block-scroll {
-        max-height: 698px !important;
+        max-height: 520px !important;
         background: #fff;
     }
 
@@ -589,9 +587,9 @@ a.article:hover {
         height: auto;
         background: #fff;
         margin: 10px;
-        color: #222;
-        border-radius: 4px;
+        color: #d2d3d3;
         padding: 5px;
+        min-width: 150px;
     }
 
     .subgroup-item:hover {
@@ -612,9 +610,10 @@ a.article:hover {
     }
 
     .active-sg {
-        background: #fff;
         box-shadow: 0 0 10px 1px #0000003b;
         transition: .2s;
+        color: #f5bc1eba;
+        transform: rotate(2deg)
 
     }
 
@@ -663,34 +662,33 @@ a.article:hover {
         background: rgba(0, 0, 0, 0.49);
     }
 
-    // @media screen and (max-width: 1300px) {
-    //     .task-list-block {
-    //         flex: none;
-    //         max-width: none;
-    //     }
+    .scrollmenu {
+        background-color: #5f666d33;
+        overflow: auto;
+        white-space: nowrap;
+        display: flex;
+      }
+      
+    .scrollmenu a {
+        display: inline-block;
+        color: white;
+        text-align: center;
+        padding: 14px;
+        text-decoration: none;
+      }
+      
+    .scrollmenu a:hover {
+        background-color: #777;
+    }
 
-    //     .subgroup-item-row {
-    //         float: left;
-    //     }
+    .subgroup-item-row {
+        flex-wrap: nowrap;
+    }
 
-    //     .subgroup-list-block {
-    //         flex: none;
-    //         max-width: 100%;
-    //     }
+    .content-width {
+        width: calc(100% - 250px) !important;
+    }
 
-    //     .subgroup-list-block-scroll {
-    //         max-height: 210px !important;
-    //     }
-
-    //     .subgroup-card-body {
-    //         display: flex;
-    //         justify-content: space-around;
-    //         flex-wrap: wrap;
-    //     }
-    // }
-
-    @media screen and (max-width: 768px) {
-        .left-margin-col {
-            display: none;
-        }
+    .content-width-80 {
+        width: calc(100% - 80px) !important;
     }

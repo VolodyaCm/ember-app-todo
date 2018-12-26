@@ -102,7 +102,6 @@ function generateId() {
 export default Controller.extend({
     init() {
         const localSt = this.get('stats.groups');
-        console.log(this.get('stats.groups'));
         Object.keys(localSt).forEach(el => {
             list.set(el, Group.create({
                 active: false,
@@ -144,16 +143,6 @@ export default Controller.extend({
                 active: true,
             }));
         }
-
-
-        // list.get(g_id).get('subgroups').get(sg_id).get('tasks').set(`t_${generateId()}`, Task.create({
-        //     completed: false,
-        //     task: 'rand',
-        // }));
-
-        console.log(list);
-        console.log('location---', this.location);
-
     },
     stats: storageFor('stats'),
     location: {
@@ -191,7 +180,6 @@ export default Controller.extend({
                 }));
                 this.set('location.group', _id);
                 this.set('location.subgroup', undefined);
-                console.log(list);
                 this.set('stats.groups', list);
             }
         },
@@ -209,7 +197,6 @@ export default Controller.extend({
                     active: true,
                 }));
                 this.set('location.subgroup', _id);
-                console.log(list);
                 this.set('stats.groups', list);
             }
         },
@@ -244,8 +231,6 @@ export default Controller.extend({
                 task: this.task,
             }));
             this.set('stats.groups', list);
-            console.log(list);
-            console.log(this.location);
         },
 
         changeId() {
@@ -315,7 +300,6 @@ export default Controller.extend({
         },
 
         deleteTask(id) {
-            console.log(id);
             const tasks = list.get(this.location.group).get('subgroups').get(this.location.subgroup).get('tasks');
             tasks.set(id, undefined);
             delete tasks[id];
@@ -349,7 +333,6 @@ export default Controller.extend({
 
         pressEnter(addtask, e) {
             if(e.keyCode == 13) {
-                console.log(e.keyCode);
                 addtask();
             }
         },
@@ -366,7 +349,6 @@ export default Controller.extend({
             list.get(key).set(`active`, true);
             
             list.get(key).get('subgroups').get(Object.keys(list.get(key).get('subgroups'))[0]).set(`active`, true);
-            console.log(this.location);
         },
 
         saveLocationForSubgroup(key, value) {
@@ -449,7 +431,6 @@ export default Controller.extend({
             const file = document.querySelector('.fileInput').files[0];
             const reader = new FileReader();
             this.set('err.fileType.active', false);
-            console.log(file);
             reader.onload = function(e) {
 
                 const data = XLSX.read(e.target.result, {type: 'binary'});
@@ -462,9 +443,6 @@ export default Controller.extend({
                 }else {
                     self.set('err.fileType.active', true);
                 }
-
-                console.log('DATA', data);
-                console.log('jsonDATA', jsonData);
 
                 if(jsonData) {
                     for(let key of jsonData) {
@@ -487,7 +465,6 @@ export default Controller.extend({
                             self.set('stats.groups', list);
                         }
                     }
-                    console.log(list);
                     self.set('location.group', Object.keys(list)[0]);
                     self.set('location.subgroup', Object.keys(list[Object.keys(list)[0]].subgroups)[0]);
                 }
@@ -500,7 +477,7 @@ export default Controller.extend({
                     this.set('menu', false);
             }else {
                 this.set('menu', true);
-            }
+            };
         },
 
         cLog() {
