@@ -142,7 +142,7 @@ export default Controller.extend({
                 tasks: EmberObject.extend({}).create({}),
                 active: true,
             }));
-        }
+        };
     },
     stats: storageFor('stats'),
     location: {
@@ -178,8 +178,7 @@ export default Controller.extend({
                     subgroups: EmberObject.extend({}).create({}),
                     active: true,
                 }));
-                this.set('location.group', _id);
-                this.set('location.subgroup', undefined);
+                this.saveLocation(_id);
                 this.set('stats.groups', list);
             }
         },
@@ -196,7 +195,7 @@ export default Controller.extend({
                     tasks: EmberObject.extend({}).create({}),
                     active: true,
                 }));
-                this.set('location.subgroup', _id);
+                this.saveLocation(undefined, _id);
                 this.set('stats.groups', list);
             }
         },
@@ -290,8 +289,7 @@ export default Controller.extend({
                 if(!list.activeGroup()) {
                     const g_id = Object.keys(list)[Object.keys(list).length - 1];
                     const sg_id = Object.keys(list[g_id].subgroups)[0];
-                    this.set('location.group', g_id);
-                    this.set('location.subgroup', sg_id);
+                    this.saveLocation(g_id, sg_id);
                     if(sg_id) list.get(g_id).subgroups.get(sg_id).set('active', true);
                     list.get(g_id).set('active', true);
                 };
@@ -311,7 +309,7 @@ export default Controller.extend({
             subgroups.set(id, undefined);
             delete subgroups[id];
             if(!list.activeSubgroup(this.location.group)) {
-                this.set('location.subgroup', Object.keys(subgroups)[Object.keys(subgroups).length - 1]);
+                this.saveLocation(undefined, Object.keys(subgroups)[Object.keys(subgroups).length - 1]);
                 subgroups.get(this.location.subgroup).set('active', true);
             };
             this.set('stats.groups', list);
@@ -487,4 +485,14 @@ export default Controller.extend({
             console.log(list.getSheet(this.exportCompletedTasks));
         }
     },
+}).reopen({
+    saveLocation(group, subgroup) {
+        if(group) {
+            this.set('location.group', group);
+        };
+        if(subgroup) {
+            this.set('location.subgroup', subgroup);
+        };
+        console.log(this.location);
+    }
 });
