@@ -155,28 +155,40 @@
                             </div>
                         </div>
                     </div>
-                    {{#if location.subgroup.key}}
                         <div class="col-5 options">
                             <div class="row">
                                 <div class="col">
                                     <p>Groups: {{location.group.groups}}</p>
-                                    <p>Group: <span class="badge badge-warning">{{location.group.obj.group}}</span></p>
-                                    <p>Subgroups: {{location.group.subgroups}}</p>
+                                    <p class="fs-20 fw-b bg-e6e6e69c pl-1 br-3">Group: <span class="badge badge-warning">{{location.group.obj.group}}</span></p>
+                                    <ul>
+                                        <li>
+                                            <p>Subgroups: {{location.group.subgroups}}</p>
+                                        </li>
+                                    </ul>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col">
-                                    <p>Subgroup: <span class="badge badge-warning">{{location.subgroup.obj.subgroup}}</span></p>
-                                    <p>Tasks: {{location.subgroup.tasks}}</p>
-                                    <p>Completed: {{location.subgroup.completed}}</p>
-                                    <p>Active: {{location.subgroup.active}}</p>
-                                    <div class="delete" class="btn btn-danger" onclick={{action "deleteSubgroup" location.subgroup.key}}>
-                                        {{fa-icon "fas fa-trash"}}
+                            {{#if location.subgroup.key}}
+                                <div class="row">
+                                    <div class="col">
+                                        <p class="fs-20 fw-b bg-e6e6e69c pl-1 br-3">Subgroup: <span class="badge badge-warning">{{location.subgroup.obj.subgroup}}</span></p>
+                                        <ul>
+                                            <li>
+                                                <p>Tasks: {{location.subgroup.tasks}}</p>
+                                            </li>
+                                            <li>
+                                                <p>Completed: {{location.subgroup.completed}}</p>
+                                            </li>
+                                            <li>
+                                                <p>Active: {{location.subgroup.active}}</p>
+                                            </li>
+                                        </ul>
+                                        <div class="delete" class="btn btn-danger" onclick={{action "deleteSubgroup" location.subgroup.key}}>
+                                            delete subgroup
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            {{/if}}
                         </div>
-                    {{/if}}
                 </div>
             </div>
 

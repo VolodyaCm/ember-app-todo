@@ -72,6 +72,12 @@ let List = EmberObject.extend({
         }
     },
 
+    deactivationSubgroup(g_id) {
+        for(let key of Object.keys(list[g_id].subgroups)) {
+            list.get(g_id).get('subgroups').get(key).set('active', false);
+        }
+    },
+
     getSheet(exportCompletedTasks) {
         const ws_data = [];
         const groups = Object.keys(this);
@@ -203,9 +209,8 @@ export default Controller.extend({
         addGroup(e) {
             if(e.keyCode == 13) {
                 const _id = `g_${generateId()}`;
-                Object.keys(list).forEach(el => {
-                    list.get(el).set('active', false);
-                });
+                list.deactivationGroup();
+                this.set('location.subgroup.key', null);
                 list.set(_id, Group.create({
                     group: this.group,
                     subgroups: EmberObject.extend({}).create({}),
@@ -297,15 +302,17 @@ export default Controller.extend({
         },
 
         deleteSubgroup(id) {
-            const subgroups = list.get(this.location.group.key).get('subgroups');
-            subgroups.set(id, undefined);
-            delete subgroups[id];
-            if(!list.activeSubgroup(this.location.group.key)) {
-                this.saveLocation(undefined, Object.keys(subgroups)[Object.keys(subgroups).length - 1]);
-                subgroups.get(this.location.subgroup.key).set('active', true);
-            };
-            this.set('stats.groups', list);
-            this.updateStatistics();
+            if(confirm('Delete this subgroup?')) {
+                const subgroups = list.get(this.location.group.key).get('subgroups');
+                subgroups.set(id, undefined);
+                delete subgroups[id];
+                if(!list.activeSubgroup(this.location.group.key)) {
+                    this.saveLocation(undefined, Object.keys(subgroups)[Object.keys(subgroups).length - 1]);
+                    subgroups.get(this.location.subgroup.key).set('active', true);
+                };
+                this.set('stats.groups', list);
+                this.updateStatistics();
+            }
         },
 
         isCompleted(id) {
@@ -330,16 +337,18 @@ export default Controller.extend({
         },
 
         saveLocation(key) {
-            this.saveLocation(key, Object.keys(list[key].subgroups)[0]);
-            Object.keys(list).forEach(el => {
-                list.get(el).set(`active`, false);
-                Object.keys(list[el].subgroups).forEach(sg => {
-                    list.get(el).get('subgroups').get(sg).set(`active`, false);
-                });
-            });
+            const subgroups = list.get(key).get('subgroups');
+            const sg_id = Object.keys(subgroups)[0];
+            this.set('location.subgroup.key', null);
+            this.saveLocation(key, sg_id);
+            list.deactivationGroup();
+            list.deactivationSubgroup(key);
             list.get(key).set(`active`, true);
-            
-            list.get(key).get('subgroups').get(Object.keys(list.get(key).get('subgroups'))[0]).set(`active`, true);
+            console.log('LENGTH', Object.keys(subgroups).length);
+            if(Object.keys(subgroups).length) {
+                subgroups.get(sg_id).set(`active`, true);
+            };
+            this.updateStatistics();
         },
 
         saveLocationForSubgroup(key, value) {
@@ -350,6 +359,7 @@ export default Controller.extend({
                 });
             });
             value.set('active', true);
+            this.updateStatistics();
         },
 
         toggleModal() {
