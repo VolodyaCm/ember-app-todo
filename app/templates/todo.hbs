@@ -1,7 +1,29 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col">
-            {{task-list list}}
+            {{#each-in list as |key value|}}
+                <div class="row">
+                    <div class="col">
+                        <div class="row">
+                            <div class="col">
+                                <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">
+                                        <input type="checkbox" aria-label="Checkbox for following text input">
+                                    </div>
+                                </div>
+                                    <textarea class="form-control" aria-label="With textarea" rows="1 ">{{value.task}}</textarea>
+                                    <div class="input-group-append">
+                                        {{input type="button" class="btn deleteTaskButton" click=(action "deleteTask" key) value="✕"}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {{else}}
+                no obj
+            {{/each-in}}
         </div>
         <div class="col-5">
             {{#add-task (action "addTask")}}

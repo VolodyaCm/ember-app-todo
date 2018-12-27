@@ -29,6 +29,10 @@ export default Controller.extend({
                 completed: false,
                 task: this.task,
             }));
+        },
+
+        deleteTask(id) {
+            list[id].deleteTask(id);
         }
     }
 
