@@ -151,10 +151,32 @@
                     <div class="col-6 task-list-block mt-20">
                         <div class="card task-list-block-scroll square scrollbar-pink bordered-pink thin">
                             <div class="card-body">
-                                {{task-list list (action "changeId") (action "changeActive") (action "changePassive") (action "deleteDataTask") stats (action "deleteTask") (action "isCompleted") (action "saveTask") location}}
+                                {{task-list list (action "changeId") stats (action "deleteTask") (action "isCompleted") (action "saveTask") location}}
                             </div>
                         </div>
                     </div>
+                    {{#if location.subgroup.key}}
+                        <div class="col-5 options">
+                            <div class="row">
+                                <div class="col">
+                                    <p>Groups: {{location.group.groups}}</p>
+                                    <p>Group: <span class="badge badge-warning">{{location.group.obj.group}}</span></p>
+                                    <p>Subgroups: {{location.group.subgroups}}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <p>Subgroup: <span class="badge badge-warning">{{location.subgroup.obj.subgroup}}</span></p>
+                                    <p>Tasks: {{location.subgroup.tasks}}</p>
+                                    <p>Completed: {{location.subgroup.completed}}</p>
+                                    <p>Active: {{location.subgroup.active}}</p>
+                                    <div class="delete" class="btn btn-danger" onclick={{action "deleteSubgroup" location.subgroup.key}}>
+                                        {{fa-icon "fas fa-trash"}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {{/if}}
                 </div>
             </div>
 

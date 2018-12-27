@@ -16,10 +16,9 @@ const Group = EmberObject.extend({
 });
 
 const Subgroup = EmberObject.extend({
+})
 
-});
-
-let list = EmberObject.extend({
+let List = EmberObject.extend({
     createGroup(key) {
         this.set(key[0], Group.create({
             group: key[1],
@@ -30,7 +29,7 @@ let list = EmberObject.extend({
     },
 
     createSubgroup(key, location) {
-        this.get(location.group).get('subgroups').set(key[0], Subgroup.create({
+        this.get(location.group.key).get('subgroups').set(key[0], Subgroup.create({
             subgroup: key[1],
             active: false,
             tasks: EmberObject.extend({}).create({})
@@ -38,7 +37,7 @@ let list = EmberObject.extend({
     },
 
     createTask(key, location) {
-        this.get(location.group).get('subgroups').get(location.subgroup).get('tasks').set(key[0], Task.create({
+        this.get(location.group.key).get('subgroups').get(location.subgroup.key).get('tasks').set(key[0], Task.create({
             task: key[1],
             completed: key[2]
         }));
@@ -92,8 +91,40 @@ let list = EmberObject.extend({
                 }
             }
             return ws_data;
+    },
+
+    getNumberOfgroups() {
+        return Object.keys(list).length;
+    },
+
+    getNumberOfSubgroups(location) {
+        return Object.keys(location.group.obj.subgroups).length;
+    },
+
+    getNumberOftasks(location) {
+        let completed = 0;
+        let active = 0;
+        const tasks = location.subgroup.obj.tasks;
+        for(let task of Object.keys(tasks)) {
+            if(tasks[task].completed) {
+                completed += 1;
+            } else active += 1;
+        }
+        return { completed, active,
+            all: completed + active,
+        };
+    },
+
+    getStatistics(location) {
+        return {
+            groups: this.getNumberOfgroups(),
+            subgroups: this.getNumberOfSubgroups(location),
+            tasks: this.getNumberOftasks(location),
+        };
     }
-}).create({});
+});
+
+const list = List.create({});
 
 function generateId() {
     return `${Math.floor(Math.random() * 1000000000)}`;
@@ -130,24 +161,26 @@ export default Controller.extend({
         const g_id = 'g_00000000001';
         const sg_id = 'sg_0000000001';
         
-        if(!list[g_id]) {
-            list.set(g_id, Group.create({
-                group: 'Main group',
-                subgroups: EmberObject.extend({}).create({}),
-                active: true,
-            }));
-    
-            list.get(g_id).get('subgroups').set(sg_id, Subgroup.create({
-                subgroup: 'Main subgroup',
-                tasks: EmberObject.extend({}).create({}),
-                active: true,
-            }));
-        };
+        this.createMaingroup(g_id, sg_id);
+        this.saveLocation(g_id, sg_id);
+        this.updateStatistics();
     },
     stats: storageFor('stats'),
     location: {
-        group: 'g_00000000001',
-        subgroup: 'sg_0000000001',
+        group: {
+            key: 'g_00000000001',
+            obj: null,
+            groups: null,
+            subgroups: null,
+
+        },
+        subgroup: {
+            key: 'sg_0000000001',
+            obj: null,
+            tasks: null,
+            completed: null,
+            active: null,
+        },
     },
     err: {
         fileType: {
@@ -180,13 +213,14 @@ export default Controller.extend({
                 }));
                 this.saveLocation(_id);
                 this.set('stats.groups', list);
+                this.updateStatistics();
             }
         },
 
         addSubgroup(e) {
             if(e.keyCode == 13) {
                 const _id = `sg_${generateId()}`;
-                const g_id  = this.get('location.group');
+                const g_id  = this.get('location.group.key');
                 Object.keys(list.get(g_id).get('subgroups')).forEach(el => {
                     list.get(g_id).get('subgroups').get(el).set('active', false);
                 });
@@ -197,75 +231,30 @@ export default Controller.extend({
                 }));
                 this.saveLocation(undefined, _id);
                 this.set('stats.groups', list);
+                this.updateStatistics();
             }
         },
 
         addtask() {
-            // this.set('id', this.id + 1);
             const _id = `t_${generateId()}`;
-            const g_id = this.get('location.group');
-            const sg_id = this.get('location.subgroup');
+            const g_id = this.get('location.group.key');
+            const sg_id = this.get('location.subgroup.key');
             this.set('active', this.active + 1);
-            // const localSt = this.get('stats.tasks');
-            // Object.keys(localSt).forEach(el => {
-            //     list.set(el, Group.create({
-            //         group: localSt[el].group,
-            //         subgroups: localSt[el].subgroups,
-            //     }));
-            //     Object.keys(localSt[el].subgroups).forEach(sg => {
-            //         list.set(`${el}.subgroups.${sg}`, Subgroup.create({
-            //             subgroup: localSt[el].subgroups[sg],
-            //             tasks: localSt[el].subgroups[sg].tasks,
-            //         }));
-            //         Object.keys(localSt[el].subgroups[sg].tasks).forEach(ts => {
-            //             list.set(`${el}.subgroups.${sg}.tasks.${ts}`, Task.create({
-            //                 completed: localSt[el].subgroup[sg].tasks[ts].completed,
-            //                 task: localSt[el].subgroups[sg].tasks[ts].task,
-            //             }));
-            //         })
-            //     });
-            // });
             list.get(g_id).get('subgroups').get(sg_id).get('tasks').set(_id, Task.create({
                 completed: false,
                 task: this.task,
             }));
             this.set('stats.groups', list);
+            this.updateStatistics();
         },
 
         changeId() {
             this.set('id', this.id - 1);
         },
 
-        changeActive(id) {
-            const tasks = list.get(this.location.group).get('subgroups').get(this.location.subgroup).get('tasks');
-            if(tasks.get(id).get('completed')) {
-                this.set('active', this.active - 1);
-            }else {
-                this.set('active', this.active + 1);
-            }
-        },
-
-        changePassive(id) {
-            const tasks = list.get(this.location.group).get('subgroups').get(this.location.subgroup).get('tasks');
-            if(tasks.get(id).get('completed')) {
-                this.set('passive', this.passive + 1);
-            }else {
-                this.set('passive', this.passive - 1);
-            }
-        },
-
-        deleteDataTask(id) {
-            if(this.active && !(list[id].completed)) {
-                this.set('active', this.active - 1);
-            }
-            if(this.passive && list[id].completed) {
-                this.set('passive', this.passive - 1);
-            }
-        },
-
         deleteCompletedTask() {
             if(confirm(`Delete tasks?`)) {
-                const tasks = list.get(this.location.group).get('subgroups').get(this.location.subgroup).get('tasks');
+                const tasks = list.get(this.location.group.key).get('subgroups').get(this.location.subgroup.key).get('tasks');
                 Object.keys(tasks).forEach(el => {
                     if(tasks[el].completed) {
                         delete tasks[el].deleteTask(el, tasks);
@@ -274,6 +263,7 @@ export default Controller.extend({
                     } 
                 });
                 this.set('stats.groups', list);
+                this.updateStatistics();
             }
         },
 
@@ -294,35 +284,39 @@ export default Controller.extend({
                     list.get(g_id).set('active', true);
                 };
                 this.set('stats.groups', list);
+                this.updateStatistics();
             }
         },
 
         deleteTask(id) {
-            const tasks = list.get(this.location.group).get('subgroups').get(this.location.subgroup).get('tasks');
+            const tasks = list.get(this.location.group.key).get('subgroups').get(this.location.subgroup.key).get('tasks');
             tasks.set(id, undefined);
             delete tasks[id];
             this.set('stats.groups', list);
+            this.updateStatistics();
         },
 
         deleteSubgroup(id) {
-            const subgroups = list.get(this.location.group).get('subgroups');
+            const subgroups = list.get(this.location.group.key).get('subgroups');
             subgroups.set(id, undefined);
             delete subgroups[id];
-            if(!list.activeSubgroup(this.location.group)) {
+            if(!list.activeSubgroup(this.location.group.key)) {
                 this.saveLocation(undefined, Object.keys(subgroups)[Object.keys(subgroups).length - 1]);
-                subgroups.get(this.location.subgroup).set('active', true);
+                subgroups.get(this.location.subgroup.key).set('active', true);
             };
             this.set('stats.groups', list);
+            this.updateStatistics();
         },
 
         isCompleted(id) {
-            const tasks = list.get(this.location.group).get('subgroups').get(this.location.subgroup).get('tasks');
+            const tasks = list.get(this.location.group.key).get('subgroups').get(this.location.subgroup.key).get('tasks');
             if(tasks.get(id).get("completed")) {
                 tasks.get(id).set('completed', false);
             }else {
                 tasks.get(id).set("completed", true);
             };
             this.set('stats.groups', list);
+            this.updateStatistics();
         },
 
         saveTask() {
@@ -336,8 +330,7 @@ export default Controller.extend({
         },
 
         saveLocation(key) {
-            this.set('location.group', key);
-            this.set('location.subgroup', Object.keys(list[key].subgroups)[0]);
+            this.saveLocation(key, Object.keys(list[key].subgroups)[0]);
             Object.keys(list).forEach(el => {
                 list.get(el).set(`active`, false);
                 Object.keys(list[el].subgroups).forEach(sg => {
@@ -350,7 +343,7 @@ export default Controller.extend({
         },
 
         saveLocationForSubgroup(key, value) {
-            this.set('location.subgroup', key);
+            this.saveLocation(undefined, key);
             Object.keys(list).forEach(el => {
                 Object.keys(list[el].subgroups).forEach(sg => {
                     list.get(el).get('subgroups').get(sg).set(`active`, false);
@@ -448,23 +441,23 @@ export default Controller.extend({
                             if (!list[key[0]]) {
                                 list.createGroup(key);
                             }
-                            self.set('location.group', key[0]);
+                            self.set('location.group.key', key[0]);
                             self.set('stats.groups', list);
                         }else if(key[0].split('_')[0] == 'sg') {
-                            if(!list[self.location.group].subgroups[key[0]]) {
+                            if(!list[self.location.group.key].subgroups[key[0]]) {
                                 list.createSubgroup(key, self.location);
                             }
-                            self.set('location.subgroup', key[0]);
+                            self.set('location.subgroup.key', key[0]);
                             self.set('stats.groups', list);
                         }else if (key[0][0] == 't') {
-                            if(!list[self.location.group].subgroups[self.location.subgroup].tasks[key[0]]) {
+                            if(!list[self.location.group.key].subgroups[self.location.subgroup.key].tasks[key[0]]) {
                                 list.createTask(key, self.location);
                             }
                             self.set('stats.groups', list);
                         }
                     }
-                    self.set('location.group', Object.keys(list)[0]);
-                    self.set('location.subgroup', Object.keys(list[Object.keys(list)[0]].subgroups)[0]);
+                    self.set('location.group.key', Object.keys(list)[0]);
+                    self.set('location.subgroup.key', Object.keys(list[Object.keys(list)[0]].subgroups)[0]);
                 }
             };
             reader.readAsBinaryString(file);
@@ -488,11 +481,38 @@ export default Controller.extend({
 }).reopen({
     saveLocation(group, subgroup) {
         if(group) {
-            this.set('location.group', group);
+            this.set('location.group.key', group);
+            this.set('location.group.obj', list[group])
         };
         if(subgroup) {
-            this.set('location.subgroup', subgroup);
+            this.set('location.subgroup.key', subgroup);
+            this.set('location.subgroup.obj', list[this.location.group.key].subgroups[subgroup]);
         };
-        console.log(this.location);
+        console.log('Location', this.location);
+    },
+
+    createMaingroup(g_id, sg_id) {
+        if(!list[g_id]) {
+            list.set(g_id, Group.create({
+                group: 'Main group',
+                subgroups: EmberObject.extend({}).create({}),
+                active: true,
+            }));
+    
+            list.get(g_id).get('subgroups').set(sg_id, Subgroup.create({
+                subgroup: 'Main subgroup',
+                tasks: EmberObject.extend({}).create({}),
+                active: true,
+            }));
+        };
+    },
+
+    updateStatistics() {
+        const statistics = list.getStatistics(this.location);
+        this.set('location.group.groups', statistics.groups);
+        this.set('location.group.subgroups', statistics.subgroups);
+        this.set('location.subgroup.tasks', statistics.tasks.all);
+        this.set('location.subgroup.completed', statistics.tasks.completed);
+        this.set('location.subgroup.active', statistics.tasks.active);
     }
 });
