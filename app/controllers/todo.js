@@ -5,6 +5,10 @@ import FileSaver from 'file-saver';
 /* global XLSX */
 
 const Task = EmberObject.extend({
+    deleteTask(id, tasks) {
+        tasks.set(id, undefined);
+        delete tasks[id];
+    }
 }).reopenClass({
     createTask(key, task, completed, location) {
         list.get(location.group.key).get('subgroups').get(location.subgroup.key).get('tasks').set(key, Task.create({
@@ -12,11 +16,6 @@ const Task = EmberObject.extend({
             completed,
         }));
     },
-
-    deleteTask(id, tasks) {
-        tasks.set(id, undefined);
-        delete tasks[id];
-    }
 })
 
 const Group = EmberObject.extend({
