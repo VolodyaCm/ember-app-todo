@@ -6,7 +6,6 @@ export default Component.extend({
         return this.params[6];
     }),
     list: computed('params.[]', 'location.{group.key,subgroup.key}', function() {
-        console.log('---changet list');
         if(this.location.subgroup.key) {
             return this.params[0].get(this.location.group.key).get('subgroups').get(this.location.subgroup.key).get('tasks');
         }else {
@@ -35,13 +34,7 @@ export default Component.extend({
             };
         },
         completed(id) {
-            console.log(id);
             this.isCompleted(id);
-        },
-
-        cLog() {
-            console.log(this.list);
-            console.log(this.location);
         },
     }
 }).reopenClass({

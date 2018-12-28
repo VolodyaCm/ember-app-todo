@@ -2,12 +2,12 @@ import Component from '@ember/component';
 import { computed } from '@ember/object';
 
 export default Component.extend({
-    addtask: computed('params.[]', function(){
+    addTask: computed('params.[]', function(){
         return this.params[0];
     }),
     actions: {
-      addtask() {
-        this.addtask();
+      addTask() {
+        this.addTask();
       },
     },
     }).reopenClass({

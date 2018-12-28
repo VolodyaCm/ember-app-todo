@@ -3,9 +3,7 @@ import { computed } from '@ember/object';
 
 export default Component.extend({
     list: computed('params.[]', 'location.{group.key,subgroup.key}', function() {
-        console.log('sg', this.location.subgroup.key);
         if(this.location.subgroup.key) {
-            console.log(this.params[0].get(this.location.group.key).get('subgroups').get(this.location.subgroup.key));
             return this.params[0].get(this.location.group.key).get('subgroups');
         }
     }),
