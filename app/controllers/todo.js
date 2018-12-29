@@ -26,7 +26,6 @@ const Group = EmberObject.extend({
             Subgroup.createSubgroup(sg_id, 'Main subgroup', true, location, {main: true});
         };
     },
-
     createGroup(key, group, active=false, param) {
         const g_obj = Group.create({
             group,
@@ -252,7 +251,7 @@ export default Controller.extend({
             }
         },
 
-        addtask() {
+        addTask() {
             const _id = `t_${generateId()}`;
             const g_id = this.get('location.group.key');
             const sg_id = this.get('location.subgroup.key');

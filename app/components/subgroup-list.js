@@ -7,23 +7,14 @@ export default Component.extend({
             return this.params[0].get(this.location.group.key).get('subgroups');
         }
     }),
-    location: computed('params.[]', function() {
-        return this.params[1];
-    }),
-    saveLocationForSubgroup: computed('params.[]', function() {
-        return this.params[2];
-    }),
-    deleteSubgroup: computed('params.[]', function() {
-        return this.params[3];
-    }), 
     actions: {
         saveLocation(key, value) {
-            this.saveLocationForSubgroup(key, value);
+            this.saveLocation(key, value);
         },
         deleteSubgroup(key, event) {
             event.stopPropagation();
             if(confirm('Delete this subgroup?')) {
-                this.deleteSubgroup(key);
+                this.delete(key);
             }
         } 
     }
