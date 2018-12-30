@@ -7,7 +7,6 @@ export default Component.extend({
         const sg_id = this.location.subgroup.key;
         const subgroups = this.params[0].get(g_id).get('subgroups');
         const tasks = sg_id ? subgroups.get(sg_id).get('tasks') : null;
-
         if(sg_id) {
             return tasks;
         }else {
