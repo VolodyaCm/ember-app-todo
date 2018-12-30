@@ -135,15 +135,78 @@
       </div>
     </nav>
     <div class="col-12 subgroup-list-block">
-      {{subgroup-list list location=location delete=(action "deleteSubgroup") saveLocation=(action
-      "saveLocationForSubgroup")}}
+      <div class="scrollmenu">
+        {{#each-in subgroups as |key value|}}
+          <div class="subgroup-item {{if value.active 'active-sg'}}" id="{{key}}" onclick={{action "saveLocationForSubgroup" key value}}>
+            <div class="row subgroup-item-row">
+              <div class="col">
+                <div class="row subgroup-item-row">
+                  <div class="col h5 c-5f666d">
+                    {{fa-icon "fas fa-paper-plane"}}
+                    <span class="badge badge-pill badge-light">{{value.subgroup}}</span>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <div class="progress subgroup-progress-bar">
+                      <div class="progress-bar bg-success" role="progressbar" style="width: 20%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        {{else}}
+          <span>no subgroups</span>
+        {{/each-in}}
+      </div>
     </div>
     <div class="container-fluid p-0">
       <div class="row task-conteiner">
         <div class="col-6 task-list-block mt-20">
           <div class="card task-list-block-scroll square scrollbar-pink bordered-pink thin">
             <div class="card-body">
-              {{task-list list location=location delete=(action "deleteTask") completed=(action "isCompleted") save=(action "saveTask")}}
+              {{#each-in tasks as |key value|}}
+                <div class="row">
+                  <div class="col">
+                    <div class="task-item" id={{key}}>
+                      <div class="row bg-white">
+                        <div class="col">
+                          <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                              <div class="input-group-text checkbox-block">
+                                <div class="checkbox">
+                                  <label>
+                                    {{input type="checkbox" checked=value.completed click=(action "isCompleted" key) class="task-checkbox" aria-label="Checkbox for following text input"}}
+                                    <span class="cr">
+                                      {{fa-icon "fas fa-check cr-icon glyphicon glyphicon-arrow-right"}}
+                                    </span>
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+                            {{#if value.completed}}
+                              <div class="row completed-task-block">
+                                <div class="col">
+                                  <strike>{{value.task}}</strike>
+                                </div>
+                              </div>
+                            {{else}}
+                              {{textarea class="form-control change-task-input" aria-label="With textarea" rows="1" value=value.task input=saveTask}}
+                            {{/if}}
+                            <div class="input-group-append delete-task-button-block">
+                              {{input type="button" class="btn delete-task-button" click=(action "deleteTask" key) value="✕"}}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {{else}}
+                <span>no tasks</span>
+              {{/each-in}}
             </div>
           </div>
         </div>
@@ -192,9 +255,14 @@
         </ul>
         <ul class="nav navbar-nav ml-auto w-50">
           <li class="nav-item active w-100">
-            {{#add-task add=(action "addTask")}}
+            <div class="input-group mb-3 task-input-group-append">
               {{input value=task class="form-control add-new-task-input" aria-label="Recipient's username" aria-describedby="basic-addon2" placeholder="Add a task" keyDown=(action "pressEnter" (action "addTask"))}}
-            {{/add-task}}
+              <div class="input-group-append">
+                <div class="add-new-task-btn">
+                  {{fa-icon "fal fa-chevron-circle-up" click=(action "addTask")}}
+                </div>
+              </div>
+            </div>
           </li>
         </ul>
       </div>
