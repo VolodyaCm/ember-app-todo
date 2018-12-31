@@ -193,7 +193,7 @@
                                 </div>
                               </div>
                             {{else}}
-                              {{textarea class="form-control change-task-input" aria-label="With textarea" rows="1" value=value.task input=saveTask}}
+                              {{textarea class="form-control change-task-input" aria-label="With textarea" rows="1" value=value.task input=saveList}}
                             {{/if}}
                             <div class="input-group-append delete-task-button-block">
                               {{input type="button" class="btn delete-task-button" click=(action "deleteTask" key) value="✕"}}

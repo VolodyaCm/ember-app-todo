@@ -38,12 +38,7 @@ const Subgroup = EmberObject.extend({}).reopenClass({
   }
 })
 
-const Task = EmberObject.extend({
-  deleteTask(id, tasks) {
-    tasks.set(id, undefined);
-    delete tasks[id];
-  }
-}).reopenClass({
+const Task = EmberObject.extend({}).reopenClass({
   createTask(key, task, completed, tasks) {
     if(tasks[key]) return;
     tasks.set(key, Task.create({
@@ -257,10 +252,10 @@ export default Controller.extend({
       if (e.keyCode == 13) {
         const _id = `g_${generateId()}`;
         list.deactivationGroup();
-        this.set('location.subgroup.key', null);
+        this.clearLocationSubgroup();
         Group.createGroup(_id, this.group, true);
         this.saveLocation(_id);
-        this.set('stats.groups', list);
+        this.saveList();
         this.updateStatistics();
       }
     },
@@ -268,13 +263,10 @@ export default Controller.extend({
     addSubgroup(e) {
       if (e.keyCode == 13) {
         const _id = `sg_${generateId()}`;
-        const g_id = this.get('location.group.key');
-        Object.keys(list.get(g_id).get('subgroups')).forEach(el => {
-          list.get(g_id).get('subgroups').get(el).set('active', false);
-        });
+        list.deactivationSubgroup(this.subgroups);
         Subgroup.createSubgroup(_id, this.subgroup, true, this.subgroups);
         this.saveLocation(undefined, _id);
-        this.set('stats.groups', list);
+        this.saveList();
         this.updateStatistics();
       }
     },
@@ -282,7 +274,7 @@ export default Controller.extend({
     addTask() {
       const _id = `t_${generateId()}`;
       Task.createTask(_id, this.task, false, this.tasks);
-      this.set('stats.groups', list);
+      this.saveList();
       this.updateStatistics();
     },
 
@@ -297,7 +289,7 @@ export default Controller.extend({
             Task.delete(el, this.tasks);
           }
         });
-        this.set('stats.groups', list);
+        this.saveList();
         this.updateStatistics();
       }
     },
@@ -318,7 +310,7 @@ export default Controller.extend({
           this.clearLocationSubgroup();
           this.saveLocation(g_id, sg_id);
         }
-        this.set('stats.groups', list);
+        this.saveList();
         this.updateStatistics();
       }
     },
@@ -339,31 +331,31 @@ export default Controller.extend({
         }else {
           this.clearLocationSubgroup();
         }
-        this.set('stats.groups', list);
+        this.saveList();
         this.updateStatistics();
       }
     },
 
     deleteTask(id) {
-      const tasks = list.get(this.location.group.key).get('subgroups').get(this.location.subgroup.key).get('tasks');
-      Task.delete(id, tasks);
-      this.set('stats.groups', list);
-      this.updateStatistics();
+      if(confirm('Delete this task?')) {
+        Task.delete(id, this.tasks);
+        this.saveList();
+        this.updateStatistics();
+      }
     },
 
     isCompleted(id) {
-      const tasks = list.get(this.location.group.key).get('subgroups').get(this.location.subgroup.key).get('tasks');
-      if (tasks.get(id).get("completed")) {
-        tasks.get(id).set('completed', false);
+      if (this.tasks.get(id).get("completed")) {
+        this.tasks.get(id).set('completed', false);
       } else {
-        tasks.get(id).set("completed", true);
-      };
-      this.set('stats.groups', list);
+        this.tasks.get(id).set("completed", true);
+      }
+      this.saveList();
       this.updateStatistics();
     },
 
-    saveTask() {
-      this.set('stats.groups', list);
+    saveList() {
+      this.saveList();
     },
 
     pressEnter(addtask, e) {
@@ -533,7 +525,7 @@ export default Controller.extend({
         this.set('menu', false);
       } else {
         this.set('menu', true);
-      };
+      }
     },
 
     log() {
@@ -544,6 +536,10 @@ export default Controller.extend({
     }
   },
 }).reopen({
+  saveList() {
+    this.set('stats.groups', list);
+  },
+
   saveLocation(group, subgroup) {
     if(group) {
       this.set('location.group.key', group);
