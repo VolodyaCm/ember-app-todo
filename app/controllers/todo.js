@@ -292,12 +292,9 @@ export default Controller.extend({
 
     deleteCompletedTask() {
       if (confirm(`Delete tasks?`)) {
-        const tasks = list.get(this.location.group.key).get('subgroups').get(this.location.subgroup.key).get('tasks');
-        Object.keys(tasks).forEach(el => {
-          if (tasks[el].completed) {
-            delete tasks[el].deleteTask(el, tasks);
-            this.set('passive', this.passive - 1);
-            this.set('id', this.id - 1);
+        Object.keys(this.tasks).forEach(el => {
+          if (this.tasks[el].completed) {
+            Task.delete(el, this.tasks);
           }
         });
         this.set('stats.groups', list);
