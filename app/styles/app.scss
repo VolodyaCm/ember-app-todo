@@ -10,9 +10,9 @@
 body {
     height: 100vh;
     // background: #fafafa;
-    background: url(https://images.wallpaperscraft.ru/image/gorod_parizh_eyfeleva_bashnya_boke_fokusirovka_razmytost_58862_2048x1152.jpg);
-    background-size: cover;
-    background-position: top center;
+    background: url('/assets/images/img2.jpg');
+    // background-size: cover;
+    // background-position: top center;
 }
 
 input[type="text"], textarea, input[type="button"]{
@@ -303,6 +303,7 @@ textarea {
     background: #545b62;
     color: #fff;
     transition: all 0.3s;
+    box-shadow: 0 0 20px 1px #0000007d;
 }
 
 #sidebar.active {
