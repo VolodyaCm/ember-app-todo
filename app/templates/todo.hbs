@@ -11,7 +11,31 @@
             <div class="card-body">
               <li>
                 {{#each-in list as |key value|}}
-                  <a href="#" onclick={{action "saveLocation" key}} class="{{if value.active "active-g"}}">
+                  {{#if value.main}}
+                  <a href="#" onclick={{action "saveLocation" key}} class="{{if value.active "active-g"}}" title={{value.group}}>
+                    {{fa-icon "fas fa-briefcase"}}
+                    {{#unless menu}}
+                      {{value.group}}
+                    {{/unless}}
+                  </a>
+                  {{/if}}
+                {{/each-in}}
+              </li>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ul>
+    {{#if (subtract-unit location.group.groups 1)}}
+    <ul class="list-unstyled components">
+      <div class="row">
+        <div class="col">
+          <div class="card groups-list-block square scrollbar-pink bordered-pink thin">
+            <div class="card-body">
+              <li>
+                {{#each-in list as |key value|}}
+                  {{#unless value.main}}
+                  <a href="#" onclick={{action "saveLocation" key}} class="{{if value.active "active-g"}}" title={{value.group}}>
                     {{fa-icon "fas fa-briefcase"}}
                     {{#unless menu}}
                       {{value.group}}
@@ -20,6 +44,7 @@
                       </div>
                     {{/unless}}
                   </a>
+                  {{/unless}}
                 {{/each-in}}
               </li>
             </div>
@@ -27,6 +52,7 @@
         </div>
       </div>
     </ul>
+    {{/if}}
     <ul class="list-unstyled CTAs">
       <div class="row task-controll-panel">
         <div class="col">
@@ -197,6 +223,7 @@
                             {{/if}}
                             <div class="input-group-append delete-task-button-block">
                               {{input type="button" class="btn delete-task-button" click=(action "deleteTask" key) value="✕"}}
+                              {{!-- {{fa-icon "fas fa-edit"}} --}}
                             </div>
                           </div>
                         </div>
@@ -237,9 +264,11 @@
                     <p>Active: {{location.subgroup.active}}</p>
                   </li>
                 </ul>
-                <div class="delete" class="btn btn-danger" onclick={{action "deleteSubgroup" location.subgroup.key}}>
-                  delete subgroup
-                </div>
+                {{#unless location.subgroup.obj.main}}
+                  <div class="delete" class="btn btn-danger" onclick={{action "deleteSubgroup" location.subgroup.key}}>
+                    delete subgroup
+                  </div>
+                {{/unless}}
               </div>
             </div>
           {{/if}}

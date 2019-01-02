@@ -177,7 +177,6 @@ export default Controller.extend({
           },
         };
         Subgroup.createSubgroup(sg, sg_obj.subgroup, false, list[el].subgroups, params);
-        console.log(list[el].subgroups === this.subgroups);
         Object.keys(tasks).forEach(ts => {
           const t_obj = localSt[el].subgroups[sg].tasks[ts];
           const location = {
@@ -246,7 +245,6 @@ export default Controller.extend({
   group: '',
   subgroup: '',
   task: '',
-  id: 0,
   actions: {
     addGroup(e) {
       if (e.keyCode == 13) {
@@ -372,7 +370,7 @@ export default Controller.extend({
       list.deactivationGroup();
       list.deactivationSubgroup(this.subgroups);
       list.get(key).set(`active`, true);
-      if (Object.keys(subgroups).length) {
+      if (list.getNumberOfSubgroups(this.subgroups)) {
         subgroups.get(sg_id).set(`active`, true);
       };
       this.updateStatistics();
