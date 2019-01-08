@@ -117,20 +117,21 @@ const List = EmberObject.extend({
   },
 
   getNumberOftasks(tasks) {
-    const statistics = {
+    const statistics = EmberObject.create({
       completed: 0,
       active: 0,
+    }).reopen({
       all: computed('completed', 'active', function() {
         return this.completed + this.active;
       })
-    };
+    });
     if(!tasks) return statistics;
     const keys = Object.keys(tasks);
     for (let task of keys) {
       if (tasks[task].completed) {
-        statistics.completed += 1;
+        statistics.incrementProperty('completed');
       } else {
-        statistics.active += 1;
+        statistics.incrementProperty('active');
       }
     }
     return statistics;

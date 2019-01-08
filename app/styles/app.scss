@@ -10,9 +10,9 @@
 body {
     height: 100vh;
     // background: #fafafa;
-    background: url('/assets/images/img2.jpg');
-    // background-size: cover;
-    // background-position: top center;
+    background: url('/assets/images/img1.jpg');
+    background-size: cover;
+    background-position: top center;
 }
 
 input[type="text"], textarea, input[type="button"]{
@@ -40,6 +40,9 @@ textarea {
     border-radius: 3px;
 }
 
+.line-through {
+    text-decoration: line-through
+}
 /* task style */
 
 /* task item style */
@@ -194,7 +197,7 @@ textarea {
 }
 
 .groups-list-block {
-    max-height: 400px;
+    max-height: 160px;
 }
 
 .task-list-block-scroll, .subgroup-list-block-scroll {
@@ -582,10 +585,6 @@ a.article:hover {
         background: none;
         border: none;
         /* right: -17px; */
-    }
-
-    .groups-list-block {
-        max-height: 400px;
     }
 
     .task-list-block-scroll, .subgroup-list-block-scroll {

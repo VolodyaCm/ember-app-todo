@@ -213,11 +213,7 @@
                               </div>
                             </div>
                             {{#if value.completed}}
-                              <div class="row completed-task-block">
-                                <div class="col">
-                                  <strike>{{value.task}}</strike>
-                                </div>
-                              </div>
+                               {{textarea class="form-control change-task-input line-through bg-white text-muted" aria-label="With textarea" rows="1" value=value.task input=saveList readonly=""}}
                             {{else}}
                               {{textarea class="form-control change-task-input" aria-label="With textarea" rows="1" value=value.task input=saveList}}
                             {{/if}}
