@@ -79,37 +79,32 @@ const Task = EmberObject.extend({}).reopenClass({
 })
 
 const List = EmberObject.extend({
-  activeSubgroup(subgroups) {
-    for (let sg of Object.keys(subgroups)) {
-      if (subgroups[sg].active) {
-        return true;
-      }
-    }
-    return false;
-  },
-
   activeGroup() {
     const groups = Object.keys(list);
-    let group = false;
-    for (let gr of groups) {
-      if (list[gr].active) {
-        group = true;
-        break;
-      }
-    }
-    return group;
+    groups.forEach(el => {
+      return list[el].active ? true : false;
+    })
+  },
+  
+  activeSubgroup(subgroups) {
+    const keys = Object.keys(subgroups);
+    return keys.forEach(el => {
+      return subgroups[el].active ? true : false;
+    })
   },
 
   deactivationGroup() {
-    for (let key of Object.keys(list)) {
-      this.get(key).set('active', false);
-    }
+    const keys = Object.keys(list);
+    keys.forEach(el => {
+      this.get(el).set('active', false);
+    })
   },
 
   deactivationSubgroup(subgroups) {
-    for (let key of Object.keys(subgroups)) {
-      subgroups.get(key).set('active', false);
-    }
+    const keys = Object.keys(subgroups);
+    keys.forEach(el => {
+      subgroups.get(el).set('active', false);
+    })
   },
 
   getSheet(exportCompletedTasks) {
@@ -141,7 +136,8 @@ const List = EmberObject.extend({
     return Object.keys(subgroups).length;
   },
 
-  getNumberOftasks(tasks) {
+  getNumberOftasks(tasks={}) {
+    const keys = Object.keys(tasks);
     const statistics = EmberObject.create({
       completed: 0,
       active: 0,
@@ -150,15 +146,13 @@ const List = EmberObject.extend({
         return this.completed + this.active;
       })
     });
-    if(!tasks) return statistics;
-    const keys = Object.keys(tasks);
-    for (let task of keys) {
-      if (tasks[task].completed) {
+    keys.forEach(el => {
+      if (tasks[el].completed) {
         statistics.incrementProperty('completed');
       } else {
         statistics.incrementProperty('active');
       }
-    }
+    });
     return statistics;
   },
 
@@ -230,7 +224,7 @@ export default Controller.extend({
     const g_id = 'g_00000000001';
     const sg_id = 'sg_0000000001';
     const storage = this.get('stats.groups');
-    
+
     list.loadGroups(storage);
     list.loadSubgroups(storage);
     list.loadTasks(storage);
