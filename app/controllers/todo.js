@@ -22,7 +22,7 @@ const Group = EmberObject.extend({}).reopenClass({
     const groupsList = document.querySelector('.groups-list-block');
     groupsList.scrollTo({
       top: groupsList.scrollHeight,
-      behavior: "smooth"
+      behavior: 'smooth'
     });
   }
 })
@@ -42,6 +42,14 @@ const Subgroup = EmberObject.extend({}).reopenClass({
   delete(id, subgroups) {
     subgroups.set(id, undefined);
     delete subgroups[id];
+  },
+
+  scrollRight() {
+    const subgroupsList = document.querySelector('.scrollmenu');
+    subgroupsList.scrollTo({
+      left: subgroupsList.scrollWidth,
+      behavior: 'smooth'
+    })
   }
 })
 
@@ -263,7 +271,9 @@ export default Controller.extend({
         this.saveLocation(_id);
         this.saveList();
         this.updateStatistics();
-        Group.scrollDown();
+        setTimeout(() => {
+          Group.scrollDown();
+        }, 10)
       }
     },
 
@@ -275,6 +285,9 @@ export default Controller.extend({
         this.saveLocation(undefined, _id);
         this.saveList();
         this.updateStatistics();
+        setTimeout(() => {
+          Subgroup.scrollRight();
+        }, 10)
       }
     },
 
@@ -540,6 +553,8 @@ export default Controller.extend({
       console.log('LIST', this.list);
       console.log('SUBGROUPS', this.get('subgroups'));
       console.log('TASKS', this.get('tasks'));
+      const groupsList = document.querySelector('.groups-list-block');
+      console.log(groupsList.scrollHeight);
     }
   },
 }).reopen({
