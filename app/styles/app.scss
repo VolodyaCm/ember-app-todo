@@ -189,14 +189,14 @@ textarea {
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1)
 }
 
-.groups-list-block, .task-list-block-scroll, .subgroup-list-block-scroll {
+.groups-list-block, .main-groups-list-block, .task-list-block-scroll, .subgroup-list-block-scroll {
     position: relative;
     overflow-y: scroll;
     background: none;
     border: none;
 }
 
-.groups-list-block {
+.groups-list-block, .main-groups-list-block {
     max-height: 160px;
 }
 
@@ -579,7 +579,7 @@ a.article:hover {
     
 
 
-    .groups-list-block, .task-list-block-scroll, .subgroup-list-block-scroll {
+    .groups-list-block, .main-groups-list-block, .task-list-block-scroll, .subgroup-list-block-scroll {
         position: relative;
         overflow-y: scroll;
         background: none;

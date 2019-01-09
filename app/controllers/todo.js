@@ -17,6 +17,13 @@ const Group = EmberObject.extend({}).reopenClass({
   delete(id) {
     list.set(id, undefined);
     delete list[id];
+  },
+  scrollDown() {
+    const groupsList = document.querySelector('.groups-list-block');
+    groupsList.scrollTo({
+      top: groupsList.scrollHeight,
+      behavior: "smooth"
+    });
   }
 })
 
@@ -256,6 +263,7 @@ export default Controller.extend({
         this.saveLocation(_id);
         this.saveList();
         this.updateStatistics();
+        Group.scrollDown();
       }
     },
 
