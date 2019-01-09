@@ -65,6 +65,14 @@ const Task = EmberObject.extend({}).reopenClass({
   delete(id, tasks) {
     tasks.set(id, undefined);
     delete tasks[id];
+  },
+  
+  scrollDown() {
+    const groupsList = document.querySelector('.task-list-block-scroll');
+    groupsList.scrollTo({
+      top: groupsList.scrollHeight,
+      behavior: 'smooth'
+    });
   }
 })
 
@@ -296,6 +304,9 @@ export default Controller.extend({
       Task.createTask(_id, this.task, false, this.tasks);
       this.saveList();
       this.updateStatistics();
+      setTimeout(() => {
+        Task.scrollDown();
+      }, 10)
     },
 
     changeId() {
