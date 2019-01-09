@@ -14,10 +14,12 @@ const Group = EmberObject.extend({}).reopenClass({
     Object.assign(g_obj, param);
     list.set(key, g_obj);
   },
+
   delete(id) {
     list.set(id, undefined);
     delete list[id];
   },
+
   scrollDown() {
     const groupsList = document.querySelector('.groups-list-block');
     groupsList.scrollTo({
@@ -167,6 +169,54 @@ const List = EmberObject.extend({
       tasks: this.getNumberOftasks(tasks),
     };
   },
+
+  loadGroups(storage) {
+    const keys = Object.keys(storage);
+    keys.forEach(el => {
+      const g_obj = storage[el];
+      const params = {};
+      if (g_obj.main) {
+        params.main = g_obj.main,
+        params.active = true
+      };
+      Group.createGroup(el, g_obj.group, false, params);
+    })
+  },
+
+  loadSubgroups(storage) {
+    const g_keys = Object.keys(storage);
+    g_keys.forEach(el => {
+      const subgroups = this[el].subgroups;
+      const sg_keys = Object.keys(storage[el].subgroups);
+      sg_keys.forEach(sg => {
+        const sg_obj = storage[el].subgroups[sg];
+        const params = {};
+        if (sg_obj.main) {
+          params.main = sg_obj.main;
+          params.active = true;
+        };
+        Subgroup.createSubgroup(sg, sg_obj.subgroup, false, subgroups, params)
+      })
+    })
+  },
+
+  loadTasks(storage) {
+    const g_keys = Object.keys(storage);
+    g_keys.forEach(el => {
+      const listSubgroups = this[el].subgroups;
+      const storageSubgroups = storage[el].subgroups;
+      const sg_keys = Object.keys(storageSubgroups);
+      sg_keys.forEach(sg => {
+        const listTasks = listSubgroups[sg].tasks;
+        const storageTasks = storageSubgroups[sg].tasks;
+        const t_keys = Object.keys(storageSubgroups[sg].tasks);
+        t_keys.forEach(ts => {
+          const t_obj = storageTasks[ts];
+          Task.createTask(ts, t_obj.task, t_obj.completed, listTasks);
+        })
+      })
+    })
+  }
 });
 
 const list = List.create({});
@@ -177,47 +227,13 @@ function generateId() {
 
 export default Controller.extend({
   init() {
-    const localSt = this.get('stats.groups');
-    Object.keys(localSt).forEach(el => {
-      const g_obj = localSt[el];
-      const subgroups = localSt[el].subgroups;
-      const params = {};
-      if (g_obj.main) {
-        params.main = g_obj.main,
-          params.active = true
-      };
-      Group.createGroup(el, g_obj.group, false, params);
-      Object.keys(subgroups).forEach(sg => {
-        const sg_obj = localSt[el].subgroups[sg];
-        const tasks = localSt[el].subgroups[sg].tasks;
-        const params = {};
-        if (sg_obj.main) {
-          params.main = sg_obj.main;
-          params.active = true;
-        };
-        const location = {
-          group: {
-            key: el
-          },
-        };
-        Subgroup.createSubgroup(sg, sg_obj.subgroup, false, list[el].subgroups, params);
-        Object.keys(tasks).forEach(ts => {
-          const t_obj = localSt[el].subgroups[sg].tasks[ts];
-          const location = {
-            group: {
-              key: el
-            },
-            subgroup: {
-              key: sg
-            }
-          };
-          Task.createTask(ts, t_obj.task, t_obj.completed, list[el].subgroups[sg].tasks);
-        })
-      });
-    });
-
     const g_id = 'g_00000000001';
     const sg_id = 'sg_0000000001';
+    const storage = this.get('stats.groups');
+    
+    list.loadGroups(storage);
+    list.loadSubgroups(storage);
+    list.loadTasks(storage);
 
     Group.createGroup(g_id, 'Main group', true, {
       main: true
@@ -564,8 +580,6 @@ export default Controller.extend({
       console.log('LIST', this.list);
       console.log('SUBGROUPS', this.get('subgroups'));
       console.log('TASKS', this.get('tasks'));
-      const groupsList = document.querySelector('.groups-list-block');
-      console.log(groupsList.scrollHeight);
     }
   },
 }).reopen({
