@@ -4,6 +4,20 @@ import { storageFor } from 'ember-local-storage';
 import FileSaver from 'file-saver';
 
 const Group = EmberObject.extend({}).reopenClass({
+  createItem(id, name, state, params) {
+    const item = {
+      id,
+      name,
+      state,
+    };
+    Object.assign(item, params);
+    return item;
+  },
+
+  saveItem(store, modelName, item) {
+    store.createRecord(modelName, item);
+  },
+
   createGroup(key, group, active = false, param) {
     if(list[key]) return;
     const g_obj = Group.create({
@@ -29,7 +43,7 @@ const Group = EmberObject.extend({}).reopenClass({
   }
 })
 
-const Subgroup = EmberObject.extend({}).reopenClass({
+const Subgroup = Group.extend({}).reopenClass({
   createSubgroup(key, subgroup, active = false, subgroups, param) {
     if(subgroups[key]) return;
     const sg_obj = Subgroup.create({
@@ -55,7 +69,17 @@ const Subgroup = EmberObject.extend({}).reopenClass({
   }
 })
 
-const Task = EmberObject.extend({}).reopenClass({
+const Task = Group.extend({}).reopenClass({
+  createItem(id, task, state, params) {
+    const item = {
+      id,
+      task,
+      state,
+    };
+    Object.assign(item, params);
+    return item;
+  },
+
   createTask(key, task, completed, tasks) {
     if(tasks[key]) return;
     tasks.set(key, Task.create({
@@ -281,11 +305,14 @@ export default Controller.extend({
   task: '',
   actions: {
     addGroup(e) {
+      const store = this.get('store');
       if (e.keyCode == 13) {
         const _id = `g_${generateId()}`;
         list.deactivationGroup();
         this.clearLocationSubgroup();
         Group.createGroup(_id, this.group, true);
+        const item = Group.createItem(_id, this.group, true);
+        Group.saveItem(store, 'group', item);
         this.saveLocation(_id);
         this.saveList();
         this.updateStatistics();
@@ -296,10 +323,13 @@ export default Controller.extend({
     },
 
     addSubgroup(e) {
+      const store = this.get('store');
       if (e.keyCode == 13) {
         const _id = `sg_${generateId()}`;
         list.deactivationSubgroup(this.subgroups);
         Subgroup.createSubgroup(_id, this.subgroup, true, this.subgroups);
+        const subgroup = Subgroup.createItem(_id, this.subgroup, true);
+        Subgroup.saveItem(store, 'subgroup', subgroup);
         this.saveLocation(undefined, _id);
         this.saveList();
         this.updateStatistics();
@@ -310,8 +340,11 @@ export default Controller.extend({
     },
 
     addTask() {
+      const store = this.get('store');
       const _id = `t_${generateId()}`;
       Task.createTask(_id, this.task, false, this.tasks);
+      const task = Task.createItem(_id, this.task, false);
+      Task.saveItem(store, 'task', task);
       this.saveList();
       this.updateStatistics();
       setTimeout(() => {
@@ -570,10 +603,17 @@ export default Controller.extend({
     },
 
     log() {
+      const store = this.get('store');
+      const groups = store.peekAll('group');
+      const subgroups = store.peekAll('subgroup');
+      const tasks = store.peekAll('task');
       console.log('LOCATION', this.location);
       console.log('LIST', this.list);
       console.log('SUBGROUPS', this.get('subgroups'));
       console.log('TASKS', this.get('tasks'));
+      console.log('GROUPS IN MODEL', groups);
+      console.log('SUBGROUPS IN MODEL', subgroups);
+      console.log('TASKS IN MODEL', tasks);
     }
   },
 }).reopen({
