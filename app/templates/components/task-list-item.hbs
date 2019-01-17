@@ -1,0 +1,34 @@
+<div class="row">
+  <div class="col">
+    <div class="task-item" id={{task.id}}>
+      <div class="row bg-white">
+        <div class="col">
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <div class="input-group-text checkbox-block">
+                <div class="checkbox">
+                  <label>
+                    {{input type="checkbox" checked=task.state click=(action "isCompleted" task.id) class="task-checkbox" aria-label="Checkbox for following text input"}}
+                    <span class="cr">
+                      {{fa-icon "fas fa-check cr-icon glyphicon glyphicon-arrow-right"}}
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            {{#if task.state}}
+                {{textarea class="form-control change-task-input line-through bg-white text-muted" aria-label="With textarea" rows="1" value=task.task input=saveList readonly=""}}
+            {{else}}
+              {{textarea class="form-control change-task-input" aria-label="With textarea" rows="1" value=task.task input=saveList}}
+            {{/if}}
+            <div class="input-group-append delete-task-button-block">
+              {{input type="button" class="btn delete-task-button" click=(action "deleteTask" key) value="✕"}}
+              {{!-- {{fa-icon "fas fa-edit"}} --}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{yield}}
