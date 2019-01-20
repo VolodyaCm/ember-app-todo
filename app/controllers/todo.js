@@ -344,7 +344,11 @@ export default Controller.extend({
         const _id = `sg_${generateId()}`;
         list.deactivationSubgroup(this.subgroups);
         Subgroup.createSubgroup(_id, this.subgroup, true, this.subgroups);
-        const subgroup = Subgroup.createItem(_id, this.subgroup, true);
+        const currentGroupId = this.get('location.group.key');
+        const currentGroup = store.peekRecord('group', currentGroupId);
+        const subgroup = Subgroup.createItem(_id, this.subgroup, true, {
+          group: currentGroup
+        });
         Subgroup.saveItem(store, 'subgroup', subgroup);
         this.saveLocation(undefined, _id);
         this.saveList();
