@@ -267,12 +267,15 @@ export default Controller.extend({
     const g_id = this.location.group.key;
     return this.list.get(g_id).get('subgroups');
   }),
-  tasks: computed('list', 'location.{group.key,subgroup.key}', function() {
-    const g_id = this.location.group.key;
-    const sg_id = this.location.subgroup.key;
-    if(sg_id) {
-      return this.list.get(g_id).get('subgroups').get(sg_id).get('tasks');
-    }
+  tasks: computed('list', 'location.{group.key,subgroup.key,task.key}', function() {
+    const store = this.get('store');
+    const tasks = store.peekAll('task');
+    const currentGroupId = this.get('location.group.key');
+    const currentSubgroupId = this.get('location.subgroup.key');
+    const tasksOfsubgroups = tasks.filter(task => {
+      return task.get('subgroup.id') === currentSubgroupId && task.get('subgroup.group.id') === currentGroupId;
+    });
+    return tasksOfsubgroups;
   }),
   stats: storageFor('stats'),
   location: {
@@ -289,6 +292,9 @@ export default Controller.extend({
       completed: null,
       active: null,
     },
+    task: {
+      key: null,
+    }
   },
   err: {
     fileType: {
