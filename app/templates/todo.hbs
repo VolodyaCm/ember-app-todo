@@ -10,16 +10,9 @@
           <div class="card main-groups-list-block square scrollbar-pink bordered-pink thin">
             <div class="card-body">
               <li>
-                {{#each-in list as |key value|}}
-                  {{#if value.main}}
-                  <a href="#" onclick={{action "saveLocation" key}} class="{{if value.active "active-g"}}" title={{value.group}}>
-                    {{fa-icon "fas fa-briefcase"}}
-                    {{#unless menu}}
-                      {{value.group}}
-                    {{/unless}}
-                  </a>
-                  {{/if}}
-                {{/each-in}}
+                {{#each groups as |group|}}
+                  {{main-group-list-item group=group menu=menu}}
+                {{/each}}
               </li>
             </div>
           </div>
@@ -33,19 +26,14 @@
           <div class="card groups-list-block square scrollbar-pink bordered-pink thin">
             <div class="card-body">
               <li>
-                {{#each-in list as |key value|}}
-                  {{#unless value.main}}
-                  <a href="#" onclick={{action "saveLocation" key}} class="{{if value.active "active-g"}}" title={{value.group}}>
-                    {{fa-icon "fas fa-briefcase"}}
-                    {{#unless menu}}
-                      {{value.group}}
-                      <div class="delete btn float-right delete-group-button-block" onclick={{action "deleteGroup" key}}>
-                        {{fa-icon "fas fa-trash delete-group-button-item"}}
-                      </div>
-                    {{/unless}}
-                  </a>
-                  {{/unless}}
-                {{/each-in}}
+                {{#each groups as |group|}}
+                  {{group-list-item
+                    group=group
+                    menu=menu
+                    saveLocation=(action "saveLocation")
+                    deleteGroup=(action "deleteGroup")
+                  }}
+                {{/each}}
               </li>
             </div>
           </div>
@@ -162,30 +150,14 @@
     </nav>
     <div class="col-12 subgroup-list-block">
       <div class="scrollmenu">
-        {{#each-in subgroups as |key value|}}
-          <div class="subgroup-item {{if value.active 'active-sg'}}" id="{{key}}" onclick={{action "saveLocationForSubgroup" key value}}>
-            <div class="row subgroup-item-row">
-              <div class="col">
-                <div class="row subgroup-item-row">
-                  <div class="col h5 c-5f666d">
-                    {{fa-icon "fas fa-paper-plane"}}
-                    <span class="badge badge-pill badge-light">{{value.subgroup}}</span>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col">
-                    <div class="progress subgroup-progress-bar">
-                      <div class="progress-bar bg-success" role="progressbar" style="width: 20%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+        {{#each subgroups as |subgroup|}}
+          {{subgroup-list-item
+            subgroup=subgroup
+            saveLocationForSubgroup=(action "saveLocationForSubgroup")
+          }}
         {{else}}
           <span>no subgroups</span>
-        {{/each-in}}
+        {{/each}}
       </div>
     </div>
     <div class="container-fluid p-0">

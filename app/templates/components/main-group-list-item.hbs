@@ -1,0 +1,9 @@
+{{#if group.main}}
+  <a href="#" onclick={{action saveLocation key}} class="{{if group.active "active-g"}}" title={{group.group}}>
+    {{fa-icon "fas fa-briefcase"}}
+    {{#unless menu}}
+      {{group.group}}
+    {{/unless}}
+  </a>
+{{/if}}
+{{yield}}
