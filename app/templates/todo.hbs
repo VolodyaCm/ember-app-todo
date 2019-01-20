@@ -193,43 +193,15 @@
         <div class="col-6 task-list-block mt-20">
           <div class="card task-list-block-scroll square scrollbar-pink bordered-pink thin">
             <div class="card-body">
-              {{#each-in tasks as |key value|}}
-                <div class="row">
-                  <div class="col">
-                    <div class="task-item" id={{key}}>
-                      <div class="row bg-white">
-                        <div class="col">
-                          <div class="input-group mb-3">
-                            <div class="input-group-prepend">
-                              <div class="input-group-text checkbox-block">
-                                <div class="checkbox">
-                                  <label>
-                                    {{input type="checkbox" checked=value.completed click=(action "isCompleted" key) class="task-checkbox" aria-label="Checkbox for following text input"}}
-                                    <span class="cr">
-                                      {{fa-icon "fas fa-check cr-icon glyphicon glyphicon-arrow-right"}}
-                                    </span>
-                                  </label>
-                                </div>
-                              </div>
-                            </div>
-                            {{#if value.completed}}
-                               {{textarea class="form-control change-task-input line-through bg-white text-muted" aria-label="With textarea" rows="1" value=value.task input=saveList readonly=""}}
-                            {{else}}
-                              {{textarea class="form-control change-task-input" aria-label="With textarea" rows="1" value=value.task input=saveList}}
-                            {{/if}}
-                            <div class="input-group-append delete-task-button-block">
-                              {{input type="button" class="btn delete-task-button" click=(action "deleteTask" key) value="✕"}}
-                              {{!-- {{fa-icon "fas fa-edit"}} --}}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              {{#each tasks as |task|}}
+                {{task-list-item 
+                  task=task
+                  isCompleted=(action "isCompleted")
+                  deleteTask=(action "deleteTask")
+                }}
               {{else}}
                 <span>no tasks</span>
-              {{/each-in}}
+              {{/each}}
             </div>
           </div>
         </div>
