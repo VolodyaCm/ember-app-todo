@@ -263,11 +263,21 @@ export default Controller.extend({
     this.updateStatistics();
   },
   list: list,
-  subgroups: computed('list', 'location.{group.key,subgroup.key}', function() {
-    const g_id = this.location.group.key;
-    return this.list.get(g_id).get('subgroups');
+  groups: computed('location.{group.key,subgroup.key}', function() {
+    const store = this.get('store');
+    const groups = store.peekAll('group');
+    return groups;
   }),
-  tasks: computed('list', 'location.{group.key,subgroup.key,task.key}', function() {
+  subgroups: computed('location.{group.key,subgroup.key}', function() {
+    const store = this.get('store');
+    const subgroups = store.peekAll('subgroup');
+    const currentGroupId = this.get('location.group.key');
+    const subgroupsOfgroup = subgroups.filter(subgroup => {
+      return subgroup.get('group.id') === currentGroupId;
+    });
+    return subgroupsOfgroup;
+  }),
+  tasks: computed('location.{group.key,subgroup.key,task.key}', function() {
     const store = this.get('store');
     const tasks = store.peekAll('task');
     const currentGroupId = this.get('location.group.key');
