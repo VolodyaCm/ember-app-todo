@@ -11,7 +11,11 @@
             <div class="card-body">
               <li>
                 {{#each groups as |group|}}
-                  {{main-group-list-item group=group menu=menu}}
+                  {{main-group-list-item 
+                    group=group 
+                    menu=menu
+                    saveLocation=(action "saveLocation")
+                  }}
                 {{/each}}
               </li>
             </div>

@@ -15,7 +15,7 @@ const Group = EmberObject.extend({}).reopenClass({
   },
 
   saveItem(store, modelName, item) {
-    store.createRecord(modelName, item);
+    return store.createRecord(modelName, item);
   },
 
   createGroup(key, group, active = false, param) {
@@ -245,22 +245,18 @@ function generateId() {
 
 export default Controller.extend({
   init() {
+    this._super(...arguments);
+    const store = this.get('store');
+    const storage = this.get('stats.groups');
     const g_id = 'g_00000000001';
     const sg_id = 'sg_0000000001';
-    const storage = this.get('stats.groups');
-
-    list.loadGroups(storage);
-    list.loadSubgroups(storage);
-    list.loadTasks(storage);
-
-    Group.createGroup(g_id, 'Main group', true, {
-      main: true
-    })
-    Subgroup.createSubgroup(sg_id, 'Main subgroup', true, this.subgroups, {
-      main: true
-    })
-    this.saveLocation(g_id, sg_id);
-    this.updateStatistics();
+    const group = Group.createItem(g_id, 'main group', true, { main: true });
+    const groupModel = Group.saveItem(store, 'group', group);
+    const subgroup = Subgroup.createItem(sg_id, 'main subgroup', true, {
+      main: true,
+      group: groupModel
+    });
+    Subgroup.saveItem(store, 'subgroup', subgroup);
   },
   list: list,
   groups: computed('location.{group.key,subgroup.key}', function() {
@@ -628,17 +624,19 @@ export default Controller.extend({
     },
 
     log() {
-      const store = this.get('store');
-      const groups = store.peekAll('group');
-      const subgroups = store.peekAll('subgroup');
-      const tasks = store.peekAll('task');
+      const groups = this.get('groups').map(el => {
+        return el.id;
+      });
+      const subgroups = this.get('subgroups').map(el => {
+        return el.id;
+      });
+      const tasks = this.get('tasks').map(el => {
+        return el.id;
+      });
       console.log('LOCATION', this.location);
-      console.log('LIST', this.list);
-      console.log('SUBGROUPS', this.get('subgroups'));
-      console.log('TASKS', this.get('tasks'));
-      console.log('GROUPS IN MODEL', groups);
-      console.log('SUBGROUPS IN MODEL', subgroups);
-      console.log('TASKS IN MODEL', tasks);
+      console.log('GROUPS', groups);
+      console.log('SUBGROUPS', subgroups);
+      console.log('TASKS', tasks);
     }
   },
 }).reopen({
