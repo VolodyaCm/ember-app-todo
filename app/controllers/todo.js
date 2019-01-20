@@ -363,10 +363,15 @@ export default Controller.extend({
       const store = this.get('store');
       const _id = `t_${generateId()}`;
       Task.createTask(_id, this.task, false, this.tasks);
-      const task = Task.createItem(_id, this.task, false);
+      const currentSubgroupId = this.get('location.subgroup.key');
+      const currentSubgroup = store.peekRecord('subgroup', currentSubgroupId);
+      const task = Task.createItem(_id, this.task, false, {
+        subgroup: currentSubgroup
+      });
       Task.saveItem(store, 'task', task);
       this.saveList();
       this.updateStatistics();
+      this.set('location.task.key', _id);
       setTimeout(() => {
         Task.scrollDown();
       }, 10)
