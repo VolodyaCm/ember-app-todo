@@ -466,28 +466,21 @@ export default Controller.extend({
       }
     },
 
-    saveLocation() {
-      const subgroups = list.get(key).get('subgroups');
-      const sg_id = Object.keys(subgroups)[0];
-      this.set('location.subgroup.key', null);
-      this.saveLocation(key, sg_id);
-      list.deactivationGroup();
-      list.deactivationSubgroup(this.subgroups);
-      list.get(key).set(`active`, true);
-      if (list.getNumberOfSubgroups(this.subgroups)) {
-        subgroups.get(sg_id).set(`active`, true);
-      };
+    saveLocation(groupId) {
+      const store = this.get('store');
+      const subgroups = store.peekRecord('group', groupId).subgroups;
+      const subgroup = subgroups.get('firstObject');
+      const subgroupId = subgroup ? subgroup.get('id') : null;
+      Group.changeState(store, 'group', false);
+      Subgroup.changeState(store, 'subgroup', false);
+      this.saveLocation(groupId, subgroupId);
       this.updateStatistics();
     },
 
-    saveLocationForSubgroup(key, value) {
-      this.saveLocation(undefined, key);
-      Object.keys(list).forEach(el => {
-        Object.keys(list[el].subgroups).forEach(sg => {
-          list.get(el).get('subgroups').get(sg).set(`active`, false);
-        });
-      });
-      value.set('active', true);
+    saveLocationForSubgroup(subgroupId) {
+      const store = this.get('store');
+      Subgroup.changeState(store, 'subgroup', false);
+      this.saveLocation(undefined, subgroupId);
       this.updateStatistics();
     },
 
@@ -631,13 +624,14 @@ export default Controller.extend({
     },
 
     log() {
-      const groups = this.get('groups').map(el => {
+      const store = this.get('store');
+      const groups = store.peekAll('group').map(el => {
         return el.id;
       });
-      const subgroups = this.get('subgroups').map(el => {
+      const subgroups = store.peekAll('subgroup').map(el => {
         return el.id;
       });
-      const tasks = this.get('tasks').map(el => {
+      const tasks = store.peekAll('task').map(el => {
         return el.id;
       });
       console.log('LOCATION', this.location);
@@ -657,11 +651,13 @@ export default Controller.extend({
       const currentGroup = store.peekRecord('group', groupId);
       this.set('location.group.key', groupId);
       this.set('location.group.obj', currentGroup);
+      currentGroup.set('state', true);
     }
     if(subgroupId || subgroupId === null) {
-      const currentSubgroup = store.peekRecord('subgroup', subgroupId);
+      const currentSubgroup = subgroupId ? store.peekRecord('subgroup', subgroupId) : null;
       this.set('location.subgroup.key', subgroupId);
       this.set('location.subgroup.obj', currentSubgroup);
+      if(subgroupId) currentSubgroup.set('state', true);
     }
   },
 
