@@ -172,7 +172,7 @@
               {{#each tasks as |task|}}
                 {{task-list-item 
                   task=task
-                  isCompleted=(action "isCompleted")
+                  taskStateToggle=(action "taskStateToggle")
                   deleteTask=(action "deleteTask")
                 }}
               {{else}}

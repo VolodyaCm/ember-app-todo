@@ -394,14 +394,20 @@ export default Controller.extend({
     },
 
     deleteCompletedTask() {
-      if (confirm(`Delete tasks?`)) {
-        Object.keys(this.tasks).forEach(el => {
-          if (this.tasks[el].completed) {
-            Task.delete(el, this.tasks);
+      if(confirm('Delete completed tasks?')) {
+        const store = this.get('store');
+        const subgroup = store.peekRecord('subgroup', this.get('location.subgroup.key'));
+        console.log(subgroup.get('tasks'));
+        subgroup.get('tasks').forEach(el => {
+          console.log(el.state)
+          if(el.state) {
+            store.deleteRecord(el);
           }
         });
+      
         this.saveList();
         this.updateStatistics();
+        this.set('location.task.key', null);
       }
     },
 
@@ -462,12 +468,14 @@ export default Controller.extend({
       }
     },
 
-    isCompleted(id) {
-      if (this.tasks.get(id).get("completed")) {
-        this.tasks.get(id).set('completed', false);
-      } else {
-        this.tasks.get(id).set("completed", true);
-      }
+    taskStateToggle(taskId) {
+      const store = this.get('store');
+      const taskRecord = store.peekRecord('task', taskId);
+      if(taskRecord.get('state')) {
+        taskRecord.set('state', false)
+      }else {
+        taskRecord.set('state', true)
+      };
       this.saveList();
       this.updateStatistics();
     },
