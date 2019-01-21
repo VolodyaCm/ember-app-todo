@@ -1,5 +1,5 @@
 {{#unless group.main}}
-  <a href="#" onclick={{action saveLocation group.id}} class="{{if group.state "active-g"}}" title={{group.name}}>
+  <a href="#" onclick={{saveLocation}} class="{{if group.state "active-g"}}" title={{group.name}}>
     {{fa-icon "fas fa-briefcase"}}
     {{#unless menu}}
       {{group.name}}

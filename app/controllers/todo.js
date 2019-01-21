@@ -34,6 +34,12 @@ const Group = EmberObject.extend({}).reopenClass({
     delete list[id];
   },
 
+  changeState(store, modelName, state) {
+    store.peekAll(modelName).forEach(el => {
+      el.set('state', state);
+    })
+  },
+
   scrollDown() {
     const groupsList = document.querySelector('.groups-list-block');
     groupsList.scrollTo({
@@ -248,15 +254,16 @@ export default Controller.extend({
     this._super(...arguments);
     const store = this.get('store');
     const storage = this.get('stats.groups');
-    const g_id = 'g_00000000001';
-    const sg_id = 'sg_0000000001';
-    const group = Group.createItem(g_id, 'main group', true, { main: true });
+    const groupId = 'g_00000000001';
+    const subgroupId = 'sg_0000000001';
+    const group = Group.createItem(groupId, 'main group', true, { main: true });
     const groupModel = Group.saveItem(store, 'group', group);
-    const subgroup = Subgroup.createItem(sg_id, 'main subgroup', true, {
+    const subgroup = Subgroup.createItem(subgroupId, 'main subgroup', true, {
       main: true,
       group: groupModel
     });
     Subgroup.saveItem(store, 'subgroup', subgroup);
+    this.saveLocation(groupId, subgroupId);
   },
   list: list,
   groups: computed('location.{group.key,subgroup.key}', function() {
@@ -320,7 +327,7 @@ export default Controller.extend({
       const store = this.get('store');
       if (e.keyCode == 13) {
         const _id = `g_${generateId()}`;
-        list.deactivationGroup();
+        Group.changeState(store, 'group', false);
         this.clearLocationSubgroup();
         Group.createGroup(_id, this.group, true);
         const item = Group.createItem(_id, this.group, true);
@@ -338,7 +345,7 @@ export default Controller.extend({
       const store = this.get('store');
       if (e.keyCode == 13) {
         const _id = `sg_${generateId()}`;
-        list.deactivationSubgroup(this.subgroups);
+        Subgroup.changeState(store, 'subgroup', false)
         Subgroup.createSubgroup(_id, this.subgroup, true, this.subgroups);
         const currentGroupId = this.get('location.group.key');
         const currentGroup = store.peekRecord('group', currentGroupId);
@@ -459,7 +466,7 @@ export default Controller.extend({
       }
     },
 
-    saveLocation(key) {
+    saveLocation() {
       const subgroups = list.get(key).get('subgroups');
       const sg_id = Object.keys(subgroups)[0];
       this.set('location.subgroup.key', null);
@@ -644,16 +651,17 @@ export default Controller.extend({
     this.set('stats.groups', list);
   },
 
-  saveLocation(group, subgroup) {
-    if(group) {
-      this.set('location.group.key', group);
-      this.set('location.group.obj', list[group]);
-      this.set('location.group.obj.active', true);
+  saveLocation(groupId, subgroupId) {
+    const store = this.get('store');
+    if(groupId) {
+      const currentGroup = store.peekRecord('group', groupId);
+      this.set('location.group.key', groupId);
+      this.set('location.group.obj', currentGroup);
     }
-    if(subgroup || subgroup === null) {
-      this.set('location.subgroup.key', subgroup);
-      this.set('location.subgroup.obj', list[this.location.group.key].subgroups[subgroup]);
-      this.set('location.subgroup.active', true);
+    if(subgroupId || subgroupId === null) {
+      const currentSubgroup = store.peekRecord('subgroup', subgroupId);
+      this.set('location.subgroup.key', subgroupId);
+      this.set('location.subgroup.obj', currentSubgroup);
     }
   },
 
