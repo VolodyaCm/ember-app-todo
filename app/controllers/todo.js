@@ -146,24 +146,26 @@ const List = EmberObject.extend({
     })
   },
 
-  getSheet(exportCompletedTasks) {
+  getSheet(store, exportCompletedTasks) {
     const ws_data = [];
-    const groups = Object.keys(this);
-    for (let gr of groups) {
-      ws_data.push([gr, this[gr].group, this[gr].active]);
-      for (let sg of Object.keys(this[gr].subgroups)) {
-        ws_data.push([sg, this[gr].subgroups[sg].subgroup, this[gr].subgroups[sg].active]);
-        for (let ts of Object.keys(this[gr].subgroups[sg].tasks)) {
-          if (exportCompletedTasks) {
-            ws_data.push([ts, this[gr].subgroups[sg].tasks[ts].task, this[gr].subgroups[sg].tasks[ts].completed]);
-          } else {
-            if (!this[gr].subgroups[sg].tasks[ts].completed) {
-              ws_data.push([ts, this[gr].subgroups[sg].tasks[ts].task, this[gr].subgroups[sg].tasks[ts].completed]);
+    const groups = store.peekAll('group');
+    groups.forEach(gr => {
+      const subgroups = gr.subgroups;
+      ws_data.push([gr.id, gr.name, gr.state]);
+      subgroups.forEach(sg => {
+        const tasks = sg.tasks;
+        ws_data.push([sg.id, sg.name, sg.state]);
+        tasks.forEach(ts => {
+          if(exportCompletedTasks) {
+            ws_data.push([ts.id, ts.task, ts.state]);
+          }else {
+            if(!ts.state) {
+              ws_data.push([ts.id, ts.task, ts.state]);
             }
           }
-        }
-      }
-    }
+        })
+      })
+    });
     return ws_data;
   },
 
@@ -325,6 +327,7 @@ export default Controller.extend({
   },
   menu: false,
   csvFile: '',
+  modal: null,
   isShowingExportModal: false,
   isShowingImportModal: false,
   exportCompletedTasks: true,
@@ -528,6 +531,7 @@ export default Controller.extend({
     },
 
     createCSVfile() {
+      const store = this.get('store');
       var wb = XLSX.utils.book_new();
       wb.Props = {
         Title: "Todo app",
@@ -536,7 +540,7 @@ export default Controller.extend({
         CreatedDate: new Date()
       };
       wb.SheetNames.push("Tasks Sheet");
-      var ws_data = list.getSheet(this.exportCompletedTasks);
+      var ws_data = list.getSheet(store, this.exportCompletedTasks);
       var ws = XLSX.utils.aoa_to_sheet(ws_data);
       wb.Sheets["Tasks Sheet"] = ws;
       var wbout = XLSX.write(wb, {
@@ -557,6 +561,7 @@ export default Controller.extend({
     },
 
     createXLSXfile() {
+      const store = this.get('store');
       var wb = XLSX.utils.book_new();
       wb.Props = {
         Title: "Todo app",
@@ -565,7 +570,7 @@ export default Controller.extend({
         CreatedDate: new Date()
       };
       wb.SheetNames.push("Tasks Sheet");
-      var ws_data = list.getSheet(this.exportCompletedTasks);
+      var ws_data = list.getSheet(store, this.exportCompletedTasks);
       var ws = XLSX.utils.aoa_to_sheet(ws_data);
       wb.Sheets["Tasks Sheet"] = ws;
       var wbout = XLSX.write(wb, {
