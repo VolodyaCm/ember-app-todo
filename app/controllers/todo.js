@@ -29,9 +29,9 @@ const Group = EmberObject.extend({}).reopenClass({
     list.set(key, g_obj);
   },
 
-  delete(id) {
-    list.set(id, undefined);
-    delete list[id];
+  deleteItem(store, modelName, id) {
+    const record = store.peekRecord(modelName, id);
+    store.deleteRecord(record);
   },
 
   changeState(store, modelName, state) {
@@ -39,6 +39,15 @@ const Group = EmberObject.extend({}).reopenClass({
       el.set('state', state);
     })
   },
+
+  activeItem(store, modelName) {
+    const records = store.peekAll(modelName);
+    let state = false;
+    records.forEach(el => {
+      if(el.state) state = true;
+    });
+    return state;
+  },  
 
   scrollDown() {
     const groupsList = document.querySelector('.groups-list-block');
@@ -111,7 +120,7 @@ const Task = Group.extend({}).reopenClass({
 const List = EmberObject.extend({
   activeGroup() {
     const groups = Object.keys(list);
-    groups.forEach(el => {
+    return groups.forEach(el => {
       return list[el].active ? true : false;
     })
   },
@@ -400,35 +409,42 @@ export default Controller.extend({
       this.get('stats').clear();
     },
 
-    deleteGroup(id, event) {
+    deleteGroup(groupId, event) {
       event.stopPropagation();
-      const g_index = Object.keys(list).indexOf(id);
+      const store = this.get('store');
+      const groups = store.peekAll('group');
+      const currentGroup = store.peekRecord('group', groupId);
+      const groupIndex = groups.indexOf(currentGroup);
       if (confirm('Delete this group?')) {
-        Group.delete(id);
-        if (!list.activeGroup()) {
-          const g_id = Object.keys(list)[g_index - 1];
-          const sg_id = Object.keys(list[g_id].subgroups)[0];
-          this.clearLocationGroup();
-          this.clearLocationSubgroup();
-          this.saveLocation(g_id, sg_id);
+        Group.deleteItem(store, 'group', groupId);
+        console.log(Group.activeItem(store, 'group'));
+        if (!Group.activeItem(store, 'group')) {
+          const group = groups.objectAt(groupIndex - 1);
+          const subgroups = group.get('subgroups');
+          const subgroup = subgroups.get('firstObject');
+          const groupId = group.get('id');
+          const subgroupId = subgroup ? subgroup.get('id') : null;
+          Group.changeState(store, 'group');
+          Subgroup.changeState(store, 'subgroup');
+          this.saveLocation(groupId, subgroupId);
         }
         this.saveList();
         this.updateStatistics();
       }
     },
 
-    deleteSubgroup(id) {
+    deleteSubgroup(subgroupId) {
       if (confirm('Delete this subgroup?')) {
-        const sg_keys = Object.keys(this.subgroups); 
-        const sg_index = sg_keys.indexOf(id);
-        Subgroup.delete(id, this.subgroups);
-        if (!list.activeSubgroup(this.subgroups) && Object.keys(this.subgroups).length) {
-          if(sg_keys[0] === id) {
-            this.saveLocation(undefined, sg_keys[sg_index + 1]);
-            this.subgroups.get(this.location.subgroup.key).set('active', true);
+        const store = this.get('store');
+        const subgroups = this.get('subgroups');
+        const subgroup = store.peekRecord('subgroup', subgroupId);
+        const subgroupIndex = subgroups.indexOf(subgroup);
+        Subgroup.deleteItem(store, 'subgroup', subgroupId);
+        if (!Subgroup.activeItem(store, 'subgroup') && subgroups.length - 1) {
+          if(subgroups.get('firstObject').get('id') === subgroupId) {
+            this.saveLocation(undefined, subgroups.objectAt(subgroupIndex + 1).get('id'));
           }else {
-            this.saveLocation(undefined, sg_keys[sg_index - 1]);
-            this.subgroups.get(this.location.subgroup.key).set('active', true);
+            this.saveLocation(undefined, subgroups.objectAt(subgroupIndex - 1).get('id'));
           }
         }else {
           this.clearLocationSubgroup();
