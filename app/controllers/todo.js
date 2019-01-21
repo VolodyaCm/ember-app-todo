@@ -460,11 +460,13 @@ export default Controller.extend({
       }
     },
 
-    deleteTask(id) {
+    deleteTask(taskId) {
       if(confirm('Delete this task?')) {
-        Task.delete(id, this.tasks);
+        const store = this.get('store');
+        Task.deleteItem(store, 'task', taskId);
         this.saveList();
         this.updateStatistics();
+        this.set('location.task.key', null);
       }
     },
 
