@@ -71,6 +71,41 @@ const Item = EmberObject.extend({}).reopenClass({
       })
     });
     return ws_data;
+  },
+
+  deserializeItems(store, data, self) {
+    if(!Array.isArray(data)) return;
+    for(let el of data) {
+      const [itemId, itemName, itemState] = el;
+      if(itemId[0] == 'g') {
+        const group = store.peekRecord('group', itemId);
+        if (!group) {
+          const groupObject = Group.createItem(itemId, itemName, false);
+          const group = Group.saveItem(store, 'group', groupObject);
+        }
+        self.saveLocation(itemId, null);
+      }else if (itemId.split('_')[0] == 'sg') {
+        const subgroup = store.peekRecord('subgroup', itemId);
+        if (!subgroup) {
+          const group = self.get('location.group.obj');
+          const subgroupObject = Subgroup.createItem(itemId, itemName, false, {
+            group,
+          });
+          const subgroup = Subgroup.saveItem(store, 'subgroup', subgroupObject);
+        }
+        self.saveLocation(undefined, itemId);
+      }else if (itemId[0] == 't') {
+        const task = store.peekRecord('task', itemId);
+        if(!task) {
+          const subgroup = self.get('location.subgroup.obj');
+          const taskObject = Task.createItem(itemId, itemName, itemState, {
+            subgroup,
+          });
+          Task.saveItem(store, 'task', taskObject);
+        }
+        self.set('location.task.key', itemId);
+      }
+    }
   }
 })
 
@@ -152,6 +187,8 @@ export default Controller.extend({
       group: groupModel
     });
     Subgroup.saveItem(store, 'subgroup', subgroup);
+    Item.deserializeItems(store, storage, this);
+    Group.changeState(store, 'group', false);
     this.saveLocation(groupId, subgroupId);
     this.updateStatistics();
   },
@@ -209,8 +246,6 @@ export default Controller.extend({
     open: false,
     type: null,
   },
-  isShowingExportModal: false,
-  isShowingImportModal: false,
   exportCompletedTasks: true,
   group: '',
   subgroup: '',
@@ -268,10 +303,6 @@ export default Controller.extend({
       setTimeout(() => {
         Task.scrollDown();
       }, 10)
-    },
-
-    changeId() {
-      this.set('id', this.id - 1);
     },
 
     deleteCompletedTask() {
@@ -468,77 +499,40 @@ export default Controller.extend({
       const reader = new FileReader();
       const store = this.get('store');
       this.set('err.fileType.active', false);
-      reader.onload = function (e) {
-
+      reader.onload = function(e) {
+        let jsonData;
         const data = XLSX.read(e.target.result, {
           type: 'binary'
         });
-        let jsonData;
-
-        if (file.name.slice(-3) == 'csv') {
+        if(file.name.slice(-3) == 'csv') {
           jsonData = XLSX.utils.sheet_to_json(data.Sheets['Sheet1'], {
             header: 1,
             raw: true
           });
-        } else if (file.name.slice(-4) == 'xlsx') {
+        }else if (file.name.slice(-4) == 'xlsx') {
           jsonData = XLSX.utils.sheet_to_json(data.Sheets['Tasks Sheet'], {
             header: 1,
             raw: true
           });
-        } else {
+        }else {
           self.set('err.fileType.active', true);
         }
-
         if (jsonData) {
-          for (let key of jsonData) {
-            if (key[0][0] == 'g') {
-              const group = store.peekRecord('group', key[0]);
-              if (!group) {
-                const groupObject = Group.createItem(key[0], key[1], false);
-                const group = Group.saveItem(store, 'group', groupObject);
-                self.set('location.group.obj', group);
-              }
-              self.set('location.group.key', key[0]);
-              if(group) self.set('location.subgroup.obj', group);
-            } else if (key[0].split('_')[0] == 'sg') {
-              const subgroup = store.peekRecord('subgroup', key[0]);
-              if (!subgroup) {
-                const group = self.get('location.group.obj');
-                const subgroupObject = Subgroup.createItem(key[0], key[1], false, {
-                  group,
-                });
-                const subgroup = Subgroup.saveItem(store, 'subgroup', subgroupObject);
-                self.set('location.subgroup.obj', subgroup);
-              }
-              self.set('location.subgroup.key', key[0]);
-              if(subgroup) self.set('location.subgroup.obj', subgroup);
-            } else if (key[0][0] == 't') {
-              const task = store.peekRecord('task', key[0]);
-              console.log('KEY', key);
-              if (!task) {
-                const subgroup = self.get('location.subgroup.obj');
-                const taskObject = Task.createItem(key[0], key[1], key[2], {
-                  subgroup,
-                });
-                Task.saveItem(store, 'task', taskObject);
-              }
-              self.set('location.task.key', key[0]);
-              // self.set('stats.groups', list);
-            }
-          }
-          self.set('location.group.key', 'g_00000000001');
-          self.set('location.subgroup.key', 'sg_0000000001');
+          Item.deserializeItems(store, jsonData, self);
+          Group.changeState(store, 'group', false);
+          self.saveLocation('g_00000000001', 'sg_0000000001');
           self.set('location.task.key', null);
         }
+        self.saveList();
         self.updateStatistics();
       };
       reader.readAsBinaryString(file);
     },
 
     toggleMenu() {
-      if (this.menu) {
+      if(this.menu) {
         this.set('menu', false);
-      } else {
+      }else {
         this.set('menu', true);
       }
     },
@@ -562,7 +556,8 @@ export default Controller.extend({
   },
 }).reopen({
   saveList() {
-    this.set('stats.groups', '');
+    const store = this.get('store');
+    this.set('stats.groups', Item.getArrayOfItems(store, true));
   },
 
   saveLocation(groupId, subgroupId) {
