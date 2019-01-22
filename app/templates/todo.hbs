@@ -60,27 +60,54 @@
       </li>
     </ul>
     <ul class="list-unstyled CTAs">
-      <li onclick={{action "openImportModal"}}>
+      <li onclick={{action "toggleModal" "import"}}>
         <a href="#" class="article">Import</a>
-        {{#if isShowingImportModal}}
+        {{#if modal.open}}
           {{#modal-dialog
-            onClose=(action "toggleModal")
+            onClose=(action "toggleModal" "import")
             targetAttachment="center"
             translucentOverlay=true
           }}
-            <div class="row">
-              <div class="col">
-                <div class="input-group mb-3">
-                  <div class="custom-file">
-                    {{input type="file" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, .csv"
-                    class="fileInput custom-file-input" change=(action "importTasks") id="inputGroupFile02"}}
-                    <label class="custom-file-label" for="inputGroupFile02">
-                      Choose file
-                    </label>
+            {{#if (check-modal-type modal.open modal.type "import")}}
+              <div class="row">
+                <div class="col">
+                  <div class="input-group mb-3">
+                    <div class="custom-file">
+                      {{input type="file" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, .csv"
+                      class="fileInput custom-file-input" change=(action "importTasks") id="inputGroupFile02"}}
+                      <label class="custom-file-label" for="inputGroupFile02">
+                        Choose file
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            {{/if}}
+            {{#if (check-modal-type modal.open modal.type "export")}}
+              <div class="row">
+                <div class="col-2">
+                  <div class="input-group-text checkbox-block">
+                    <div class="checkbox">
+                      <label>
+                        {{input type="checkbox" checked=exportCompletedTasks class="checkbox task-checkbox" aria-label="Checkbox for following text input"}}
+                        <span class="cr">
+                          {{fa-icon "fas fa-check cr-icon glyphicon glyphicon-arrow-right"}}
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <span style="display: block; margin-top: 5px">Export completed tasks?</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <input type="button" class="btn btn-success" onclick={{action "createCSVfile"}} value="Download CSV">
+                  <input class="btn btn-success" value="Download XLSX" type="button" onclick={{action "createXLSXfile"}} />
+                </div>
+              </div>
+            {{/if}}
             {{#if err.fileType.active}}
               <div class="alert alert-danger" role="alert">
                 Import only <strong>CSV</strong> or <strong>XLSX</strong> files!
@@ -89,39 +116,8 @@
           {{/modal-dialog}}
         {{/if}}
       </li>
-      <li onclick={{action "openExportModal"}}>
+      <li onclick={{action "toggleModal" "export"}}>
         <a href="#" class="article">Export</a>
-        {{#if isShowingExportModal}}
-          {{#modal-dialog
-            onClose=(action "toggleModal")
-            targetAttachment="center"
-            translucentOverlay=true
-          }}
-            <div class="row">
-              <div class="col-2">
-                <div class="input-group-text checkbox-block">
-                  <div class="checkbox">
-                    <label>
-                      {{input type="checkbox" checked=exportCompletedTasks class="checkbox task-checkbox" aria-label="Checkbox for following text input"}}
-                      <span class="cr">
-                        {{fa-icon "fas fa-check cr-icon glyphicon glyphicon-arrow-right"}}
-                      </span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-              <div class="col">
-                <span style="display: block; margin-top: 5px">Export completed tasks?</span>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col">
-                <input type="button" class="btn btn-success" onclick={{action "createCSVfile"}} value="Download CSV">
-                <input class="btn btn-success" value="Download XLSX" type="button" onclick={{action "createXLSXfile"}} />
-              </div>
-            </div>
-          {{/modal-dialog}}
-        {{/if}}
       </li>
       <a href="#" class="article" onclick={{action "log"}}>log</a>
     </ul>
@@ -172,7 +168,7 @@
               {{#each tasks as |task|}}
                 {{task-list-item 
                   task=task
-                  isCompleted=(action "isCompleted")
+                  taskStateToggle=(action "taskStateToggle")
                   deleteTask=(action "deleteTask")
                 }}
               {{else}}

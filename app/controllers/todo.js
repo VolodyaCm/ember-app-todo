@@ -3,7 +3,7 @@ import EmberObject, { computed } from '@ember/object';
 import { storageFor } from 'ember-local-storage';
 import FileSaver from 'file-saver';
 
-const Group = EmberObject.extend({}).reopenClass({
+const Item = EmberObject.extend({}).reopenClass({
   createItem(id, name, state, params) {
     const item = {
       id,
@@ -16,17 +16,6 @@ const Group = EmberObject.extend({}).reopenClass({
 
   saveItem(store, modelName, item) {
     return store.createRecord(modelName, item);
-  },
-
-  createGroup(key, group, active = false, param) {
-    if(list[key]) return;
-    const g_obj = Group.create({
-      group,
-      active,
-      subgroups: EmberObject.extend({}).create({})
-    });
-    Object.assign(g_obj, param);
-    list.set(key, g_obj);
   },
 
   deleteItem(store, modelName, id) {
@@ -47,8 +36,45 @@ const Group = EmberObject.extend({}).reopenClass({
       if(el.state) state = true;
     });
     return state;
-  },  
+  },
 
+  getNumberOfItems(items) {
+    return items.length;
+  },
+
+  getStatistics(groups, subgroups, tasks) {
+    return {
+      groups: Group.getNumberOfItems(groups),
+      subgroups: Subgroup.getNumberOfItems(subgroups),
+      tasks: Task.getNumberOfItems(tasks),
+    };
+  },
+
+  getArrayOfItems(store, exportCompletedTasks) {
+    const ws_data = [];
+    const groups = store.peekAll('group');
+    groups.forEach(gr => {
+      const subgroups = gr.subgroups;
+      ws_data.push([gr.id, gr.name, gr.state]);
+      subgroups.forEach(sg => {
+        const tasks = sg.tasks;
+        ws_data.push([sg.id, sg.name, sg.state]);
+        tasks.forEach(ts => {
+          if(exportCompletedTasks) {
+            ws_data.push([ts.id, ts.task, ts.state]);
+          }else {
+            if(!ts.state) {
+              ws_data.push([ts.id, ts.task, ts.state]);
+            }
+          }
+        })
+      })
+    });
+    return ws_data;
+  }
+})
+
+const Group = Item.extend({}).reopenClass({
   scrollDown() {
     const groupsList = document.querySelector('.groups-list-block');
     groupsList.scrollTo({
@@ -59,22 +85,6 @@ const Group = EmberObject.extend({}).reopenClass({
 })
 
 const Subgroup = Group.extend({}).reopenClass({
-  createSubgroup(key, subgroup, active = false, subgroups, param) {
-    if(subgroups[key]) return;
-    const sg_obj = Subgroup.create({
-      subgroup,
-      active,
-      tasks: EmberObject.extend({}).create({})
-    });
-    Object.assign(sg_obj, param);
-    subgroups.set(key, sg_obj);
-  },
-
-  delete(id, subgroups) {
-    subgroups.set(id, undefined);
-    delete subgroups[id];
-  },
-
   scrollRight() {
     const subgroupsList = document.querySelector('.scrollmenu');
     subgroupsList.scrollTo({
@@ -84,7 +94,7 @@ const Subgroup = Group.extend({}).reopenClass({
   }
 })
 
-const Task = Group.extend({}).reopenClass({
+const Task = Item.extend({}).reopenClass({
   createItem(id, task, state, params) {
     const item = {
       id,
@@ -95,17 +105,24 @@ const Task = Group.extend({}).reopenClass({
     return item;
   },
 
-  createTask(key, task, completed, tasks) {
-    if(tasks[key]) return;
-    tasks.set(key, Task.create({
-      task,
-      completed,
-    }));
-  },
+  getNumberOfItems(items) {
+    const statistics = EmberObject.create({
+      completed: 0,
+      active: 0,
+    }).reopen({
+      all: computed('completed', 'active', function() {
+        return this.completed + this.active;
+      })
+    });
 
-  delete(id, tasks) {
-    tasks.set(id, undefined);
-    delete tasks[id];
+    items.forEach(el => {
+      if(el.state) {
+        statistics.incrementProperty('completed');
+      }else {
+        statistics.incrementProperty('active');
+      }
+    });
+    return statistics;
   },
   
   scrollDown() {
@@ -116,143 +133,6 @@ const Task = Group.extend({}).reopenClass({
     });
   }
 })
-
-const List = EmberObject.extend({
-  activeGroup() {
-    const groups = Object.keys(list);
-    return groups.forEach(el => {
-      return list[el].active ? true : false;
-    })
-  },
-  
-  activeSubgroup(subgroups) {
-    const keys = Object.keys(subgroups);
-    return keys.forEach(el => {
-      return subgroups[el].active ? true : false;
-    })
-  },
-
-  deactivationGroup() {
-    const keys = Object.keys(list);
-    keys.forEach(el => {
-      this.get(el).set('active', false);
-    })
-  },
-
-  deactivationSubgroup(subgroups) {
-    const keys = Object.keys(subgroups);
-    keys.forEach(el => {
-      subgroups.get(el).set('active', false);
-    })
-  },
-
-  getSheet(exportCompletedTasks) {
-    const ws_data = [];
-    const groups = Object.keys(this);
-    for (let gr of groups) {
-      ws_data.push([gr, this[gr].group, this[gr].active]);
-      for (let sg of Object.keys(this[gr].subgroups)) {
-        ws_data.push([sg, this[gr].subgroups[sg].subgroup, this[gr].subgroups[sg].active]);
-        for (let ts of Object.keys(this[gr].subgroups[sg].tasks)) {
-          if (exportCompletedTasks) {
-            ws_data.push([ts, this[gr].subgroups[sg].tasks[ts].task, this[gr].subgroups[sg].tasks[ts].completed]);
-          } else {
-            if (!this[gr].subgroups[sg].tasks[ts].completed) {
-              ws_data.push([ts, this[gr].subgroups[sg].tasks[ts].task, this[gr].subgroups[sg].tasks[ts].completed]);
-            }
-          }
-        }
-      }
-    }
-    return ws_data;
-  },
-
-  getNumberOfgroups() {
-    return Object.keys(list).length;
-  },
-
-  getNumberOfSubgroups(subgroups) {
-    return Object.keys(subgroups).length;
-  },
-
-  getNumberOftasks(tasks={}) {
-    const keys = Object.keys(tasks);
-    const statistics = EmberObject.create({
-      completed: 0,
-      active: 0,
-    }).reopen({
-      all: computed('completed', 'active', function() {
-        return this.completed + this.active;
-      })
-    });
-    keys.forEach(el => {
-      if (tasks[el].completed) {
-        statistics.incrementProperty('completed');
-      } else {
-        statistics.incrementProperty('active');
-      }
-    });
-    return statistics;
-  },
-
-  getStatistics(subgroups, tasks) {
-    return {
-      groups: this.getNumberOfgroups(),
-      subgroups: this.getNumberOfSubgroups(subgroups),
-      tasks: this.getNumberOftasks(tasks),
-    };
-  },
-
-  loadGroups(storage) {
-    const keys = Object.keys(storage);
-    keys.forEach(el => {
-      const g_obj = storage[el];
-      const params = {};
-      if (g_obj.main) {
-        params.main = g_obj.main,
-        params.active = true
-      };
-      Group.createGroup(el, g_obj.group, false, params);
-    })
-  },
-
-  loadSubgroups(storage) {
-    const g_keys = Object.keys(storage);
-    g_keys.forEach(el => {
-      const subgroups = this[el].subgroups;
-      const sg_keys = Object.keys(storage[el].subgroups);
-      sg_keys.forEach(sg => {
-        const sg_obj = storage[el].subgroups[sg];
-        const params = {};
-        if (sg_obj.main) {
-          params.main = sg_obj.main;
-          params.active = true;
-        };
-        Subgroup.createSubgroup(sg, sg_obj.subgroup, false, subgroups, params)
-      })
-    })
-  },
-
-  loadTasks(storage) {
-    const g_keys = Object.keys(storage);
-    g_keys.forEach(el => {
-      const listSubgroups = this[el].subgroups;
-      const storageSubgroups = storage[el].subgroups;
-      const sg_keys = Object.keys(storageSubgroups);
-      sg_keys.forEach(sg => {
-        const listTasks = listSubgroups[sg].tasks;
-        const storageTasks = storageSubgroups[sg].tasks;
-        const t_keys = Object.keys(storageSubgroups[sg].tasks);
-        t_keys.forEach(ts => {
-          const t_obj = storageTasks[ts];
-          Task.createTask(ts, t_obj.task, t_obj.completed, listTasks);
-        })
-      })
-    })
-  }
-});
-
-const list = List.create({});
 
 function generateId() {
   return `${Math.floor(Math.random() * 10**10)}`;
@@ -273,8 +153,8 @@ export default Controller.extend({
     });
     Subgroup.saveItem(store, 'subgroup', subgroup);
     this.saveLocation(groupId, subgroupId);
+    this.updateStatistics();
   },
-  list: list,
   groups: computed('location.{group.key,subgroup.key}', function() {
     const store = this.get('store');
     const groups = store.peekAll('group');
@@ -325,6 +205,10 @@ export default Controller.extend({
   },
   menu: false,
   csvFile: '',
+  modal: {
+    open: false,
+    type: null,
+  },
   isShowingExportModal: false,
   isShowingImportModal: false,
   exportCompletedTasks: true,
@@ -338,7 +222,6 @@ export default Controller.extend({
         const _id = `g_${generateId()}`;
         Group.changeState(store, 'group', false);
         this.clearLocationSubgroup();
-        Group.createGroup(_id, this.group, true);
         const item = Group.createItem(_id, this.group, true);
         Group.saveItem(store, 'group', item);
         this.saveLocation(_id);
@@ -355,7 +238,6 @@ export default Controller.extend({
       if (e.keyCode == 13) {
         const _id = `sg_${generateId()}`;
         Subgroup.changeState(store, 'subgroup', false)
-        Subgroup.createSubgroup(_id, this.subgroup, true, this.subgroups);
         const currentGroupId = this.get('location.group.key');
         const currentGroup = store.peekRecord('group', currentGroupId);
         const subgroup = Subgroup.createItem(_id, this.subgroup, true, {
@@ -374,7 +256,6 @@ export default Controller.extend({
     addTask() {
       const store = this.get('store');
       const _id = `t_${generateId()}`;
-      Task.createTask(_id, this.task, false, this.tasks);
       const currentSubgroupId = this.get('location.subgroup.key');
       const currentSubgroup = store.peekRecord('subgroup', currentSubgroupId);
       const task = Task.createItem(_id, this.task, false, {
@@ -382,8 +263,8 @@ export default Controller.extend({
       });
       Task.saveItem(store, 'task', task);
       this.saveList();
-      this.updateStatistics();
       this.set('location.task.key', _id);
+      this.updateStatistics();
       setTimeout(() => {
         Task.scrollDown();
       }, 10)
@@ -394,12 +275,17 @@ export default Controller.extend({
     },
 
     deleteCompletedTask() {
-      if (confirm(`Delete tasks?`)) {
-        Object.keys(this.tasks).forEach(el => {
-          if (this.tasks[el].completed) {
-            Task.delete(el, this.tasks);
+      if(confirm('Delete completed tasks?')) {
+        const store = this.get('store');
+        const subgroupId = this.get('location.subgroup.key');
+        const subgroup = store.peekRecord('subgroup', subgroupId);
+        subgroup.get('tasks').forEach(el => {
+          if(el.state) {
+            store.deleteRecord(el);
+            this.set('location.task.key', el.id);
           }
         });
+      
         this.saveList();
         this.updateStatistics();
       }
@@ -454,20 +340,25 @@ export default Controller.extend({
       }
     },
 
-    deleteTask(id) {
+    deleteTask(taskId) {
       if(confirm('Delete this task?')) {
-        Task.delete(id, this.tasks);
+        const store = this.get('store');
+        Task.deleteItem(store, 'task', taskId);
+        this.set('location.task.key', null);
+        this.set('location.task.key', taskId);
         this.saveList();
         this.updateStatistics();
       }
     },
 
-    isCompleted(id) {
-      if (this.tasks.get(id).get("completed")) {
-        this.tasks.get(id).set('completed', false);
-      } else {
-        this.tasks.get(id).set("completed", true);
-      }
+    taskStateToggle(taskId) {
+      const store = this.get('store');
+      const taskRecord = store.peekRecord('task', taskId);
+      if(taskRecord.get('state')) {
+        taskRecord.set('state', false)
+      }else {
+        taskRecord.set('state', true)
+      };
       this.saveList();
       this.updateStatistics();
     },
@@ -500,24 +391,19 @@ export default Controller.extend({
       this.updateStatistics();
     },
 
-    toggleModal() {
-      if (this.get('isShowingImportModal')) {
-        this.set('err.fileType.active', false);
-        this.set('isShowingImportModal', false);
-      } else if (this.get('isShowingExportModal')) {
-        this.set('isShowingExportModal', false);
+    toggleModal(type) {
+      if(this.get('modal.open')) {
+        this.set('modal.open', false);
+        this.set('type', null);
+      }else {
+        this.set('modal.open', true);
+        this.set('modal.type', type);
       }
-    },
-
-    openExportModal() {
-      this.set('isShowingExportModal', true);
-    },
-
-    openImportModal() {
-      this.set('isShowingImportModal', true);
+      console.log(this.modal.open);
     },
 
     createCSVfile() {
+      const store = this.get('store');
       var wb = XLSX.utils.book_new();
       wb.Props = {
         Title: "Todo app",
@@ -526,7 +412,7 @@ export default Controller.extend({
         CreatedDate: new Date()
       };
       wb.SheetNames.push("Tasks Sheet");
-      var ws_data = list.getSheet(this.exportCompletedTasks);
+      var ws_data = Item.getArrayOfItems(store, this.exportCompletedTasks);
       var ws = XLSX.utils.aoa_to_sheet(ws_data);
       wb.Sheets["Tasks Sheet"] = ws;
       var wbout = XLSX.write(wb, {
@@ -547,6 +433,7 @@ export default Controller.extend({
     },
 
     createXLSXfile() {
+      const store = this.get('store');
       var wb = XLSX.utils.book_new();
       wb.Props = {
         Title: "Todo app",
@@ -555,7 +442,7 @@ export default Controller.extend({
         CreatedDate: new Date()
       };
       wb.SheetNames.push("Tasks Sheet");
-      var ws_data = list.getSheet(this.exportCompletedTasks);
+      var ws_data = Item.getArrayOfItems(store, this.exportCompletedTasks);
       var ws = XLSX.utils.aoa_to_sheet(ws_data);
       wb.Sheets["Tasks Sheet"] = ws;
       var wbout = XLSX.write(wb, {
@@ -579,6 +466,7 @@ export default Controller.extend({
       const self = this;
       const file = document.querySelector('.fileInput').files[0];
       const reader = new FileReader();
+      const store = this.get('store');
       this.set('err.fileType.active', false);
       reader.onload = function (e) {
 
@@ -604,28 +492,44 @@ export default Controller.extend({
         if (jsonData) {
           for (let key of jsonData) {
             if (key[0][0] == 'g') {
-              if (!list[key[0]]) {
-                Group.createGroup(key[0], key[1]);
+              const group = store.peekRecord('group', key[0]);
+              if (!group) {
+                const groupObject = Group.createItem(key[0], key[1], false);
+                const group = Group.saveItem(store, 'group', groupObject);
+                self.set('location.group.obj', group);
               }
               self.set('location.group.key', key[0]);
-              self.set('stats.groups', list);
+              if(group) self.set('location.subgroup.obj', group);
             } else if (key[0].split('_')[0] == 'sg') {
-              if (!list[self.location.group.key].subgroups[key[0]]) {
-                Subgroup.createSubgroup(key[0], key[1], false, self.subgroups);
+              const subgroup = store.peekRecord('subgroup', key[0]);
+              if (!subgroup) {
+                const group = self.get('location.group.obj');
+                const subgroupObject = Subgroup.createItem(key[0], key[1], false, {
+                  group,
+                });
+                const subgroup = Subgroup.saveItem(store, 'subgroup', subgroupObject);
+                self.set('location.subgroup.obj', subgroup);
               }
               self.set('location.subgroup.key', key[0]);
-              self.set('stats.groups', list);
+              if(subgroup) self.set('location.subgroup.obj', subgroup);
             } else if (key[0][0] == 't') {
-              if (!list[self.location.group.key].subgroups[self.location.subgroup.key].tasks[key[0]]) {
-                Task.createTask(key[0], key[1], key[2], self.tasks);
+              const task = store.peekRecord('task', key[0]);
+              console.log('KEY', key);
+              if (!task) {
+                const subgroup = self.get('location.subgroup.obj');
+                const taskObject = Task.createItem(key[0], key[1], key[2], {
+                  subgroup,
+                });
+                Task.saveItem(store, 'task', taskObject);
               }
-              self.set('stats.groups', list);
+              self.set('location.task.key', key[0]);
+              // self.set('stats.groups', list);
             }
           }
-          self.set('location.group.key', Object.keys(list)[0]);
-          self.set('location.subgroup.key', Object.keys(list[Object.keys(list)[0]].subgroups)[0]);
+          self.set('location.group.key', 'g_00000000001');
+          self.set('location.subgroup.key', 'sg_0000000001');
+          self.set('location.task.key', null);
         }
-
         self.updateStatistics();
       };
       reader.readAsBinaryString(file);
@@ -658,7 +562,7 @@ export default Controller.extend({
   },
 }).reopen({
   saveList() {
-    this.set('stats.groups', list);
+    this.set('stats.groups', '');
   },
 
   saveLocation(groupId, subgroupId) {
@@ -688,7 +592,7 @@ export default Controller.extend({
   },
 
   updateStatistics() {
-    const statistics = list.getStatistics(this.subgroups, this.tasks);
+    const statistics = Item.getStatistics(this.groups, this.subgroups, this.tasks);
     this.set('location.group.groups', statistics.groups);
     this.set('location.group.subgroups', statistics.subgroups);
     this.set('location.subgroup.tasks', statistics.tasks.all);
