@@ -15,7 +15,8 @@ const Item = EmberObject.extend({}).reopenClass({
   },
 
   saveItem(store, modelName, item) {
-    return store.createRecord(modelName, item);
+    const record = store.createRecord(modelName, item);
+    record.save();
   },
 
   deleteItem(store, modelName, id) {
@@ -81,7 +82,7 @@ const Item = EmberObject.extend({}).reopenClass({
         const group = store.peekRecord('group', itemId);
         if (!group) {
           const groupObject = Group.createItem(itemId, itemName, false);
-          const group = Group.saveItem(store, 'group', groupObject);
+          Group.saveItem(store, 'group', groupObject);
         }
         self.saveLocation(itemId, null);
       }else if (itemId.split('_')[0] == 'sg') {
@@ -91,7 +92,7 @@ const Item = EmberObject.extend({}).reopenClass({
           const subgroupObject = Subgroup.createItem(itemId, itemName, false, {
             group,
           });
-          const subgroup = Subgroup.saveItem(store, 'subgroup', subgroupObject);
+          Subgroup.saveItem(store, 'subgroup', subgroupObject);
         }
         self.saveLocation(undefined, itemId);
       }else if (itemId[0] == 't') {
@@ -189,6 +190,7 @@ export default Controller.extend({
     Subgroup.saveItem(store, 'subgroup', subgroup);
     Item.deserializeItems(store, storage, this);
     Group.changeState(store, 'group', false);
+    Subgroup.changeState(store, 'subgroup', false);
     this.saveLocation(groupId, subgroupId);
     this.updateStatistics();
   },
@@ -334,7 +336,6 @@ export default Controller.extend({
       const groupIndex = groups.indexOf(currentGroup);
       if (confirm('Delete this group?')) {
         Group.deleteItem(store, 'group', groupId);
-        console.log(Group.activeItem(store, 'group'));
         if (!Group.activeItem(store, 'group')) {
           const group = groups.objectAt(groupIndex - 1);
           const subgroups = group.get('subgroups');
@@ -430,7 +431,6 @@ export default Controller.extend({
         this.set('modal.open', true);
         this.set('modal.type', type);
       }
-      console.log(this.modal.open);
     },
 
     createCSVfile() {
@@ -520,6 +520,7 @@ export default Controller.extend({
         if (jsonData) {
           Item.deserializeItems(store, jsonData, self);
           Group.changeState(store, 'group', false);
+          Subgroup.changeState(store, 'subgroup', false);
           self.saveLocation('g_00000000001', 'sg_0000000001');
           self.set('location.task.key', null);
         }
@@ -557,7 +558,7 @@ export default Controller.extend({
 }).reopen({
   saveList() {
     const store = this.get('store');
-    this.set('stats.groups', Item.getArrayOfItems(store, true));
+    // this.set('stats.groups', Item.getArrayOfItems(store, true));
   },
 
   saveLocation(groupId, subgroupId) {
