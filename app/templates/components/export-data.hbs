@@ -1,0 +1,23 @@
+<div class="row">
+  <div class="col-2">
+    <div class="input-group-text checkbox-block">
+      <div class="checkbox">
+        <label>
+          {{input type="checkbox" checked=exportCompletedTasks class="checkbox task-checkbox" aria-label="Checkbox for following text input"}}
+          <span class="cr">
+            {{fa-icon "fas fa-check cr-icon glyphicon glyphicon-arrow-right"}}
+          </span>
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <span style="display: block; margin-top: 5px">Export completed tasks?</span>
+  </div>
+</div>
+<div class="row">
+  <div class="col">
+    <input type="button" class="btn btn-success" onclick={{action "downloadFile" (array-items store exportCompletedTasks) "csv"}} value="Download CSV">
+    <input class="btn btn-success" value="Download XLSX" type="button" onclick={{action "downloadFile" (array-items store exportCompletedTasks) "xlsx"}}/>
+  </div>
+</div>
