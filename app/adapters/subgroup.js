@@ -1,4 +1,4 @@
-import GroupAdapter from './group';
+import Adapter from 'ember-local-storage/adapters/local';
 
-export default GroupAdapter.extend({
+export default Adapter.extend({
 });

@@ -1,4 +1,4 @@
-import SubgroupAdapter from './subgroup';
+import Adapter from 'ember-local-storage/adapters/local';
 
-export default SubgroupAdapter.extend({
+export default Adapter.extend({
 });

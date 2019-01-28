@@ -12,7 +12,7 @@ export function arrayItems(params) {
   }).then(function(data) {
     return store.findAll('subgroup').then(function(result) {
       result.forEach(el => {
-        data.push([el.get('id'), el.get('name'), el.get('state'), el.get('group.id'), 'subgroup']);
+        data.push([el.get('id'), el.get('name'), el.get('state'), 'subgroup', el.get('group.id')]);
       })
       return data;
     })
@@ -20,9 +20,9 @@ export function arrayItems(params) {
     return store.findAll('task').then(function(result) {
       result.forEach(el => {
         if(!el.get('state') && !exportCompletedTasks) {
-          data.push([el.get('id'), el.get('task'), el.get('state'), el.get('subgroup.id'), 'task']);
+          data.push([el.get('id'), el.get('task'), el.get('state'), 'task', el.get('subgroup.id')]);
         }else {
-          data.push([el.get('id'), el.get('task'), el.get('state'), el.get('subgroup.id'), 'task']);
+          data.push([el.get('id'), el.get('task'), el.get('state'), 'task', el.get('subgroup.id')]);
         }
       });
       return data;
