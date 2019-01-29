@@ -10,11 +10,10 @@
           <div class="card main-groups-list-block square scrollbar-pink bordered-pink thin">
             <div class="card-body">
               <li>
-                {{#each groups as |group|}}
+                {{#each model.groups as |group|}}
                   {{main-group-list-item 
                     group=group 
                     menu=menu
-                    saveLocation=(action "saveLocation")
                   }}
                 {{/each}}
               </li>
@@ -23,19 +22,17 @@
         </div>
       </div>
     </ul>
-    {{#if (subtract-unit location.group.groups 1)}}
+    {{#if (subtract-unit model.groups.length 1)}}
     <ul class="list-unstyled components">
       <div class="row">
         <div class="col">
           <div class="card groups-list-block square scrollbar-pink bordered-pink thin">
             <div class="card-body">
               <li>
-                {{#each groups as |group|}}
+                {{#each model.groups as |group|}}
                   {{group-list-item
                     group=group
                     menu=menu
-                    saveLocation=(action "saveLocation")
-                    deleteGroup=(action "deleteGroup")
                   }}
                 {{/each}}
               </li>
@@ -69,27 +66,10 @@
             translucentOverlay=true
           }}
             {{#if (check-modal-type modal.open modal.type "import")}}
-              <div class="row">
-                <div class="col">
-                  <div class="input-group mb-3">
-                    <div class="custom-file">
-                      {{input type="file" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, .csv"
-                      class="fileInput custom-file-input" change=(action "importTasks") id="inputGroupFile02"}}
-                      <label class="custom-file-label" for="inputGroupFile02">
-                        Choose file
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              {{import-data}}
             {{/if}}
             {{#if (check-modal-type modal.open modal.type "export")}}
               {{export-data store=store exportCompletedTasks=exportCompletedTasks}}
-            {{/if}}
-            {{#if err.fileType.active}}
-              <div class="alert alert-danger" role="alert">
-                Import only <strong>CSV</strong> or <strong>XLSX</strong> files!
-              </div>
             {{/if}}
           {{/modal-dialog}}
         {{/if}}
@@ -128,10 +108,9 @@
     </nav>
     <div class="col-12 subgroup-list-block">
       <div class="scrollmenu">
-        {{#each subgroups as |subgroup|}}
+        {{#each model.subgroups as |subgroup|}}
           {{subgroup-list-item
             subgroup=subgroup
-            saveLocationForSubgroup=(action "saveLocationForSubgroup")
           }}
         {{else}}
           <span>no subgroups</span>
@@ -143,11 +122,9 @@
         <div class="col-6 task-list-block mt-20">
           <div class="card task-list-block-scroll square scrollbar-pink bordered-pink thin">
             <div class="card-body">
-              {{#each tasks as |task|}}
+              {{#each model.tasks as |task|}}
                 {{task-list-item 
                   task=task
-                  taskStateToggle=(action "taskStateToggle")
-                  deleteTask=(action "deleteTask")
                 }}
               {{else}}
                 <span>no tasks</span>
@@ -158,11 +135,15 @@
         <div class="col-5 options">
           <div class="row">
             <div class="col">
-              <p>Groups: {{location.group.groups}}</p>
+              <ul>
+                <li>
+                  <p>Groups: {{model.groups.length}}</p>
+                </li>
+              </ul>
               <p class="fs-20 fw-b bg-e6e6e69c pl-1 br-3">Group: <span class="badge badge-warning">{{location.group.obj.group}}</span></p>
               <ul>
                 <li>
-                  <p>Subgroups: {{location.group.subgroups}}</p>
+                  <p>Subgroups: {{model.subgroups.length}}</p>
                 </li>
               </ul>
             </div>
@@ -173,17 +154,17 @@
                 <p class="fs-20 fw-b bg-e6e6e69c pl-1 br-3">Subgroup: <span class="badge badge-warning">{{location.subgroup.obj.subgroup}}</span></p>
                 <ul>
                   <li>
-                    <p>Tasks: {{location.subgroup.tasks}}</p>
+                    Tasks: {{model.tasks.length}}
                   </li>
                   <li>
-                    <p>Completed: {{location.subgroup.completed}}</p>
+                    Completed tasks:
                   </li>
                   <li>
-                    <p>Active: {{location.subgroup.active}}</p>
+                    Active tasks:
                   </li>
                 </ul>
                 {{#unless location.subgroup.obj.main}}
-                  <div class="delete" class="btn btn-danger" onclick={{action "deleteSubgroup" location.subgroup.key}}>
+                  <div class="delete" class="btn btn-danger" onclick={{action "deleteSubgroup" LocationData.location.subgroup.key}}>
                     delete subgroup
                   </div>
                 {{/unless}}

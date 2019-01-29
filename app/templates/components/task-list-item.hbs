@@ -11,7 +11,7 @@
                     {{input
                       type="checkbox"
                       checked=task.state
-                      click=(action taskStateToggle task.id)
+                      click=(action "taskStateToggle" task.id)
                       class="task-checkbox"
                       aria-label="Checkbox for following text input"
                     }}
@@ -44,7 +44,7 @@
               {{input
                 type="button"
                 class="btn delete-task-button"
-                click=(action deleteTask task.id)
+                click=(action "deleteTask" task.id)
                 value="✕"
               }}
             </div>

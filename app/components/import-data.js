@@ -3,7 +3,10 @@ import { inject as service } from '@ember/service';
 import Ember from 'ember';
 
 const fileTypes = {
-  csv: 'application/vnd.ms-excel',
+  csv: {
+    windows: 'application/vnd.ms-excel',
+    mac: 'text/csv' 
+  },
   xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 }
 
@@ -14,14 +17,16 @@ function execute(generator, yieldValue) {
       result => execute(generator, result),
       err => generator.throw(err)
     );
-  }
+  };
 }
 
 export default Component.extend({
   store: Ember.inject.service(),
+  locationData: service('location-data'),
   group: service('group'),
   subgroup: service('subgroup'),
   task: service('task'),
+  location: Ember.computed.alias('locationData.location'),
   err: {
     fileType: false
   },
@@ -36,6 +41,7 @@ export default Component.extend({
         const jsonData = this.sheetToJson(file.type, data);
         if (jsonData) {
           execute(this.saveDataToStore(jsonData));
+          setTimeout(() => {this.set('location.task.key', 'import')});
         }
       };
       reader.readAsBinaryString(file);
@@ -72,7 +78,7 @@ export default Component.extend({
   },
 
   sheetToJson(fileType, data) {
-    if(fileType === fileTypes.csv) {
+    if(fileType === fileTypes.csv.mac) {
       return XLSX.utils.sheet_to_json(data.Sheets['Sheet1'], {
         header: 1,
         raw: true
@@ -83,7 +89,7 @@ export default Component.extend({
         raw: true
       });
     }else {
-      this.set('err.import.fileType', true);
+      this.set('err.fileType', true);
     }
   }
 })

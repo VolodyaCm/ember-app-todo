@@ -1,14 +1,18 @@
 import Service from '@ember/service';
+import { inject as service } from '@ember/service';
 import Ember from 'ember';
+import group from './group';
 
 export default Service.extend({
   store: Ember.inject.service(),
+  locationData: service('location-data'),
 
   changeState(modelName, state) {
     const store = this.get('store');
     store.peekAll(modelName).forEach(el => {
       el.set('state', state);
-    })
+      el.save();
+    });
   },
 
   activeItem(modelName) {
@@ -21,21 +25,13 @@ export default Service.extend({
     return state;
   },
 
-  getStats() {
+  getStatistic() {
     const store = this.get('store');
-    const groups = store.peekAll('group');
-    const subgroups = store.peekAll('subgroup');
-    const tasks = store.peekAll('task');
     return {
-      groups: groups.length,
-      subgroups: subgroups.length,
-      tasks: tasks.length,
-      completedTasks: tasks.reduce((sum, el) => {
-        if(el.state) return sum + 1;
-      }, 0),
-      activeTasks: tasks.reduce((sum, el) => {
-        if(!el.reduce) return sum + 1;
-      })
+      groups: 2,
+      subgroups: 1,
+      tasks: 1,
+      activeTasks: 1,
     }
   }
 

@@ -12,7 +12,7 @@ export default Route.extend({
     return RSVP.hash({
       location: locationData.location,
       groups: computed('location.{group.key,subgroup.key}', function() {
-        return store.peekAll('group');
+        return store.findAll('group');
       }),
       subgroups: computed('location.{group.key,subgroup.key}', function() {
         const currentGroupId = this.location.group.key;
