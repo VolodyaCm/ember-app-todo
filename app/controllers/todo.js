@@ -112,16 +112,18 @@ export default Controller.extend({
     deleteCompletedTask() {
       if(confirm('Delete completed tasks?')) {
         const store = this.get('store');
-        const LocationData = this.get('locationData');
+        const model = this.get('model');
+        const Task = this.get('Task');
+        const locationData = this.get('LocationData');
         const subgroupId = this.get('location.subgroup.key');
         const subgroup = store.peekRecord('subgroup', subgroupId);
-        subgroup.get('tasks').forEach(el => {
+        const tasks = model.tasks;
+        tasks.forEach(el => {
           if(el.state) {
-            store.deleteRecord(el);
-            this.set('location.task.key', el.id);
+            Task.deleteItem('task', el.id);
           }
         });
-        LocationData.updateStatistics();
+        locationData.updateStatistics();
       }
     },
 
@@ -182,7 +184,7 @@ export default Controller.extend({
         const locationData = this.get('LocationData');
         const Task = this.get('Task');
         
-        Task.deleteItem(store, 'task', taskId);
+        Task.deleteItem('task', taskId);
         this.set('location.task.key', null);
         this.set('location.task.key', taskId);
         locationData.updateStatistics();
