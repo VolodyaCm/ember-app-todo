@@ -1,31 +1,35 @@
 import Service from '@ember/service';
+import { inject as service } from '@ember/service';
 import EmberObject from '@ember/object';
 import Ember from 'ember';
 
 export default Service.extend({
   store: Ember.inject.service(),
+  ItemsStore: service('items-store'),
   location: EmberObject.create({
     group: {
       key: 'g_00000000001',
       obj: null,
       statistics: {
-        groups: null,
-        subgroups: null,
+        amountGroups: 0
       }
     },
     subgroup: {
       key: 'sg_0000000001',
       obj: null,
       statistics: {
-        tasks: null,
-        completedTasks: null,
-        activeTasks: null,
+        amountSubgroups: 0,
       }
     },
     task: {
       key: null,
       state: null,
       obj: null,
+      statistics: {
+        amountTasks: 0,
+        amountCompletedTasks: 0,
+        amountActiveTasks: 0,
+      }
     }
   }),
 
@@ -44,4 +48,21 @@ export default Service.extend({
       if(subgroupId) currentSubgroup.set('state', true);
     }
   },
+
+  clearLocation(type) {
+    const location = this.get(`location.${type}`)
+    if(location) {
+      this.set(`location.${type}.key`, null);
+      this.set(`location.${type}.obj`, null);
+    }
+  },
+
+  updateStatistics() {
+    const statistics = this.get('ItemsStore').getStatistic();
+    this.set('location.group.statistics.amountGroups', statistics.groups);
+    this.set('location.subgroup.statistics.amountSubgroups', statistics.subgroups);
+    this.set('location.task.statistics.amountTasks', statistics.tasks.all);
+    this.set('location.task.statistics.amountCompletedTasks', statistics.tasks.completed);
+    this.set('location.task.statistics.amountActiveTasks', statistics.tasks.active);
+  }
 });

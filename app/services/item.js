@@ -23,6 +23,6 @@ export default Service.extend({
     const store = this.get('store');
     const record = store.peekRecord(modelName, id);
     store.deleteRecord(record);
-    record.save();
+    return record.save();
   }
 });
