@@ -17,7 +17,6 @@ export default Component.extend({
         Task.deleteItem('task', taskId);
         this.set('location.task.key', null);
         this.set('location.task.key', taskId);
-        locationData.updateStatistics();
       }
     },
 
@@ -28,14 +27,17 @@ export default Component.extend({
       if(taskRecord.get('state')) {
         taskRecord.set('state', false);
         this.set('location.task.obj', taskRecord);
+        this.set('location.task.state', null);
+        this.set('location.task.state', false);
         taskRecord.save();
       }else {
         taskRecord.set('state', true);
         this.set('location.task.state', true);
         this.set('location.task.obj', taskRecord);
+        this.set('location.task.state', null);
+        this.set('location.task.state', true);
         taskRecord.save();
       };
-      locationData.updateStatistics();
     },
   }
 });

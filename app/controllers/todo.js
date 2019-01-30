@@ -23,6 +23,7 @@ export default Controller.extend({
       Subgroup.saveItem('subgroup', subgroup);
       locationData.saveLocation(groupId, subgroupId);
     });
+    setTimeout(() => {this.set('location.task.state', 'start')});
   },
   Group: service('group'),
   Subgroup: service('subgroup'),
@@ -58,7 +59,6 @@ export default Controller.extend({
         Group.saveItem('group', item).then((result) => {
           result.set('state', true);
           locationData.saveLocation(groupId);
-          locationData.updateStatistics();
           setTimeout(() => Group.scrollDown());
         })
       }
@@ -81,7 +81,6 @@ export default Controller.extend({
         Subgroup.saveItem('subgroup', subgroup).then((result) => {
           result.set('state', true);
           locationData.saveLocation(undefined, subgroupId);
-          locationData.updateStatistics();
           setTimeout(() => Subgroup.scrollRight());
         })
       }
@@ -100,7 +99,6 @@ export default Controller.extend({
       });
       Task.saveItem('task', task);
       this.set('location.task.key', taskId);
-      locationData.updateStatistics();
       setTimeout(() => Task.scrollDown());
     },
 
@@ -111,11 +109,8 @@ export default Controller.extend({
         const locationData = this.get('locationData');
         const tasks = model.tasks;
         tasks.forEach(el => {
-          if(el.state) {
-            Task.deleteItem('task', el.id);
-          }
+          if(el.state) Task.deleteItem('task', el.id);
         });
-        locationData.updateStatistics();
       }
     },
 
@@ -138,7 +133,6 @@ export default Controller.extend({
           }else {
             locationData.clearLocation('subgroup');
           }
-          locationData.updateStatistics();
         })
       }
     },

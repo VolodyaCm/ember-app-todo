@@ -1,11 +1,11 @@
 import Service from '@ember/service';
 import { inject as service } from '@ember/service';
-import EmberObject from '@ember/object';
+import EmberObject, { computed } from '@ember/object';
 import Ember from 'ember';
 
 export default Service.extend({
   store: Ember.inject.service(),
-  ItemsStore: service('items-store'),
+  itemsStore: service('items-store'),
   location: EmberObject.create({
     group: {
       key: 'g_00000000001',
@@ -56,13 +56,4 @@ export default Service.extend({
       this.set(`location.${type}.obj`, null);
     }
   },
-
-  updateStatistics() {
-    const statistics = this.get('ItemsStore').getStatistic();
-    this.set('location.group.statistics.amountGroups', statistics.groups);
-    this.set('location.subgroup.statistics.amountSubgroups', statistics.subgroups);
-    this.set('location.task.statistics.amountTasks', statistics.tasks.all);
-    this.set('location.task.statistics.amountCompletedTasks', statistics.tasks.completed);
-    this.set('location.task.statistics.amountActiveTasks', statistics.tasks.active);
-  }
 });

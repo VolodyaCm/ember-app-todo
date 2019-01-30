@@ -20,7 +20,6 @@ export default Component.extend({
       itemsStore.changeState('group', false);
       itemsStore.changeState('subgroup', false);
       locationData.saveLocation(groupId, subgroupId);
-      locationData.updateStatistics();
     },
   }
 });

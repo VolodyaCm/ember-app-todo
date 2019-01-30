@@ -27,7 +27,6 @@ export default Component.extend({
           }else {
             locationData.clearLocation('subgroup');
           }
-          locationData.updateStatistics();
         })
       }
     },
@@ -37,7 +36,6 @@ export default Component.extend({
       const itemsStore = this.get('itemsStore');
       itemsStore.changeState('subgroup', false);
       locationData.saveLocation(undefined, subgroupId);
-      locationData.updateStatistics();
     },
   }
 });

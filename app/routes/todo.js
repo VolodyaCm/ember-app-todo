@@ -11,6 +11,15 @@ export default Route.extend({
     const locationData = this.get('locationData');
     return RSVP.hash({
       location: locationData.location,
+      statistics: computed('groups','subgroups','tasks', 'location.task.state', function() {
+        return {
+          groups: this.groups.length,
+          subgroups: this.subgroups.length,
+          tasks: this.tasks.length,
+          activeTasks: this.tasks.filterBy('state', false).length,
+          completedTasks: this.tasks.filterBy('state', true).length, 
+        }
+      }),
       groups: computed('location.{group.key,subgroup.key}', function() {
         return store.findAll('group');
       }),

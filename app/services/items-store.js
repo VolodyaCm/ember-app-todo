@@ -24,15 +24,4 @@ export default Service.extend({
     });
     return state;
   },
-
-  getStatistic() {
-    const store = this.get('store');
-    return {
-      groups: 2,
-      subgroups: 1,
-      tasks: 1,
-      activeTasks: 1,
-    }
-  }
-
 });

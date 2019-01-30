@@ -154,13 +154,13 @@
                 <p class="fs-20 fw-b bg-e6e6e69c pl-1 br-3">Subgroup: <span class="badge badge-warning">{{location.subgroup.obj.subgroup}}</span></p>
                 <ul>
                   <li>
-                    Tasks: {{model.tasks.length}}
+                    <p>Tasks: {{model.tasks.length}}</p>
                   </li>
                   <li>
-                    Completed tasks:
+                    <p>Completed tasks: {{model.statistics.completedTasks}}</p>
                   </li>
                   <li>
-                    Active tasks:
+                    <p>Active tasks: {{model.statistics.activeTasks}}</p>
                   </li>
                 </ul>
                 {{#unless location.subgroup.obj.main}}
