@@ -94,7 +94,7 @@ export default Controller.extend({
       const taskId = `t_${generateId()}`;
       const currentSubgroupId = location.subgroup.key;
       const currentSubgroup = store.peekRecord('subgroup', currentSubgroupId);
-      const task = Task.createItem(taskId, this.task, false, {
+      const task = Task.createItem(taskId, this.task, 'active', {
         subgroup: currentSubgroup
       });
       Task.saveItem('task', task);
@@ -106,10 +106,9 @@ export default Controller.extend({
       if(confirm('Delete completed tasks?')) {
         const model = this.get('model');
         const Task = this.get('Task');
-        const locationData = this.get('locationData');
         const tasks = model.tasks;
         tasks.forEach(el => {
-          if(el.state) Task.deleteItem('task', el.id);
+          if(el.state === 'completed') Task.deleteItem('task', el.id);
         });
       }
     },

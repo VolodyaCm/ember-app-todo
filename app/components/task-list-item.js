@@ -1,19 +1,19 @@
 import Component from '@ember/component';
+import Ember from 'ember';
 import { inject as service } from '@ember/service';
 
 export default Component.extend({
-  Task: service('task'),
   store: Ember.inject.service(),
-  itemsStore: service('items-store'),
   locationData: service('location-data'),
   location: Ember.computed.alias('locationData.location'),
+  taskState: service('task-state'),
+  states: Ember.computed.alias('taskState.states'),
+  Task: service('task'),
 
   actions: {
     deleteTask(taskId) {
       if(confirm('Delete this task?')) {
-        const locationData = this.get('locationData');
         const Task = this.get('Task');
-        
         Task.deleteItem('task', taskId);
         this.set('location.task.key', null);
         this.set('location.task.key', taskId);
@@ -21,23 +21,10 @@ export default Component.extend({
     },
 
     taskStateToggle(taskId) {
-      const store = this.get('store');
-      const locationData = this.get('locationData');
-      const taskRecord = store.peekRecord('task', taskId);
-      if(taskRecord.get('state')) {
-        taskRecord.set('state', false);
-        this.set('location.task.obj', taskRecord);
-        this.set('location.task.state', null);
-        this.set('location.task.state', false);
-        taskRecord.save();
-      }else {
-        taskRecord.set('state', true);
-        this.set('location.task.state', true);
-        this.set('location.task.obj', taskRecord);
-        this.set('location.task.state', null);
-        this.set('location.task.state', true);
-        taskRecord.save();
-      };
+      const states = this.get('states');
+      const taskState = this.get('taskState');
+      if(!states.get(taskId)) taskState.addState(taskId);
+      states.get(taskId).taskState();
     },
   }
 });

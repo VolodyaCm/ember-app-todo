@@ -10,7 +10,7 @@
                   <label>
                     {{input
                       type="checkbox"
-                      checked=task.state
+                      checked=(compire task.state "completed")
                       click=(action "taskStateToggle" task.id)
                       class="task-checkbox"
                       aria-label="Checkbox for following text input"
@@ -22,7 +22,7 @@
                 </div>
               </div>
             </div>
-            {{#if task.state}}
+            {{#if (compire task.state "completed")}}
               {{textarea 
                 class="form-control change-task-input line-through bg-white text-muted"
                 aria-label="With textarea" 
