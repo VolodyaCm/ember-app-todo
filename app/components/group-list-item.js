@@ -35,16 +35,18 @@ export default Component.extend({
     },
 
     saveLocation(groupId) {
-      const store = this.get('store');
+      const model = this.get('model');
       const locationData = this.get('locationData');
       const itemsStore = this.get('itemsStore');
-      const subgroups = store.peekRecord('group', groupId).subgroups;
-      const subgroup = subgroups.get('firstObject');
-      const subgroupId = subgroup ? subgroup.get('id') : null;
-
       itemsStore.changeState('group', false);
-      itemsStore.changeState('subgroup', false);
-      locationData.saveLocation(groupId, subgroupId);
+      locationData.saveLocation(groupId, null);
+      model.subgroups.then(subgroups => {
+        const subgroup = subgroups.get('firstObject');
+        const subgroupId = subgroup ? subgroup.get('id') : null;
+        itemsStore.changeState('subgroup', false);
+        locationData.saveLocation(undefined, subgroupId);
+      })
+
     },
   }
 });

@@ -11,17 +11,13 @@ export default Service.extend({
     const store = this.get('store');
     store.peekAll(modelName).forEach(el => {
       el.set('state', state);
-      el.save();
+      el.save(); 
     });
   },
 
   activeItem(modelName) {
     const store = this.get('store');
-    const records = store.findAll(modelName);
-    let state = false;
-    records.forEach(el => {
-      if(el.state) state = true;
-    });
-    return state;
+    const records = store.peekAll(modelName);
+    return records.filterBy('state', true).length ? true : false
   },
 });

@@ -446,6 +446,10 @@ a.article:hover {
 
 /* mediaqueries */
 @media (max-width: 768px) {
+    #content {
+      width: 100% !important;
+    }
+
     #sidebar {
         min-width: 80px;
         max-width: 80px;
