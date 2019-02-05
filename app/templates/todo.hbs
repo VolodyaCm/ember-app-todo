@@ -71,7 +71,7 @@
               {{import-data}}
             {{/if}}
             {{#if (check-modal-type modal.open modal.type "export")}}
-              {{export-data store=store exportCompletedTasks=exportCompletedTasks}}
+              {{export-data store=store}}
             {{/if}}
           {{/modal-dialog}}
         {{/if}}

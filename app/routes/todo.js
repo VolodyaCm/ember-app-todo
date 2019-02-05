@@ -5,7 +5,6 @@ import RSVP from 'rsvp';
 
 export default Route.extend({
   locationData: service('location-data'),
-  itemsStore: service('items-store'),
   model() {
     const store = this.get('store');
     const locationData = this.get('locationData');

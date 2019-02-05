@@ -5,7 +5,7 @@ import Ember from 'ember';
 
 export default Service.extend({
   store: Ember.inject.service(),
-  itemsStore: service('items-store'),
+  storeItems: service('store-items'),
   location: EmberObject.create({
     group: {
       key: 'g_00000000001',

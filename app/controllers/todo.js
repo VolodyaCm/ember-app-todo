@@ -28,16 +28,10 @@ export default Controller.extend({
   Group: service('group'),
   Subgroup: service('subgroup'),
   Task: service('task'),
-  itemsStore: service('items-store'),
+  storeItems: service('store-items'),
   locationData: service('location-data'),
   location: Ember.computed.alias('locationData.location'),
-  err: {
-    fileType: {
-      active: false,
-    }
-  },
   menu: false,
-  csvFile: '',
   modal: {
     open: false,
     type: null,
@@ -50,10 +44,10 @@ export default Controller.extend({
     addGroup(e) {
       const Group = this.get('Group');
       const locationData = this.get('locationData');
-      const itemsStore = this.get('itemsStore');
+      const storeItems = this.get('storeItems');
       if (e.keyCode == 13) {
         const groupId = `g_${generateId()}`;
-        itemsStore.changeState('group', false);
+        storeItems.changeState('group', false);
         locationData.clearLocation('subgroup');
         const item = Group.createItem(groupId, this.group, false);
         Group.saveItem('group', item).then((result) => {
@@ -67,12 +61,12 @@ export default Controller.extend({
     addSubgroup(e) {
       const store = this.get('store');
       const Subgroup = this.get('Subgroup');
-      const itemsStore = this.get('itemsStore');
+      const storeItems = this.get('storeItems');
       const locationData = this.get('locationData');
       const location = locationData.location;
       if (e.keyCode == 13) {
         const subgroupId = `sg_${generateId()}`;
-        itemsStore.changeState('subgroup', false);
+        storeItems.changeState('subgroup', false);
         const groupId = location.group.key;
         const group = store.peekRecord('group', groupId);
         const subgroup = Subgroup.createItem(subgroupId, this.subgroup, false, {
@@ -119,7 +113,7 @@ export default Controller.extend({
         const model = this.get('model');
         const Subgroup = this.get('Subgroup');
         const locationData = this.get('locationData');
-        const itemsStore = this.get('itemsStore');
+        const storeItems = this.get('storeItems');
         const subgroup = store.peekRecord('subgroup', subgroupId);
         const subgroupIndex = model.subgroups.indexOf(subgroup);
         Subgroup.deleteItem('subgroup', subgroupId).then(() => {

@@ -1,5 +1,4 @@
 import { helper } from '@ember/component/helper';
-import Ember from 'ember';
 
 export function arrayItems(params) {
   const [store, exportCompletedTasks] = params;
@@ -19,9 +18,9 @@ export function arrayItems(params) {
   }).then(function(data) {
     return store.findAll('task').then(function(result) {
       result.forEach(el => {
-        if(!el.get('state') && !exportCompletedTasks) {
+        if(el.get('state') === 'active' && !exportCompletedTasks) {
           data.push([el.get('id'), el.get('task'), el.get('state'), 'task', el.get('subgroup.id')]);
-        }else {
+        }else if(exportCompletedTasks) {
           data.push([el.get('id'), el.get('task'), el.get('state'), 'task', el.get('subgroup.id')]);
         }
       });

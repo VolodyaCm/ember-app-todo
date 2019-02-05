@@ -4,14 +4,14 @@ import { inject as service } from '@ember/service';
 export default Component.extend({
   Subgroup: service('subgroup'),
   store: Ember.inject.service(),
-  itemsStore: service('items-store'),
+  storeItems: service('store-items'),
   locationData: service('location-data'),
 
   actions: {
     saveLocation(subgroupId) {
       const locationData = this.get('locationData');
-      const itemsStore = this.get('itemsStore');
-      itemsStore.changeState('subgroup', false);
+      const storeItems = this.get('storeItems');
+      storeItems.changeState('subgroup', false);
       locationData.saveLocation(undefined, subgroupId);
     },
   }

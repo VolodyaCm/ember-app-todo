@@ -1,7 +1,9 @@
 import Component from '@ember/component';
 import FileSaver from 'file-saver';
+import { computed } from '@ember/object';
 
 export default Component.extend({
+  exportCompletedTasks: true,
   actions: {
     downloadFile(ws_data, type) {
       ws_data.then(function(result) {
@@ -30,6 +32,6 @@ export default Component.extend({
           type: "application/octet-stream"
         }), `Task.${fileType}`);
       })
-    }
+    },
   }
 });

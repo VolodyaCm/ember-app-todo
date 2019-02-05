@@ -1,7 +1,6 @@
 import Service from '@ember/service';
 import { inject as service } from '@ember/service';
 import Ember from 'ember';
-import group from './group';
 
 export default Service.extend({
   store: Ember.inject.service(),
