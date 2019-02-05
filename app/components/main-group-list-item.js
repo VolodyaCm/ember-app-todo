@@ -14,8 +14,8 @@ export default Component.extend({
       const locationData = this.get('locationData');
       const itemsStore = this.get('itemsStore');
       const subgroups = store.peekRecord('group', groupId).subgroups;
-      const subgroup = subgroups.get('firstObject');
-      const subgroupId = subgroup ? subgroup.get('id') : null;
+      const subgroup = subgroups.getWithDefault('firstObject', { id: null });
+      const subgroupId = subgroup.id;
   
       itemsStore.changeState('group', false);
       itemsStore.changeState('subgroup', false);

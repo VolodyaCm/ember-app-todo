@@ -123,10 +123,10 @@ export default Controller.extend({
         const subgroup = store.peekRecord('subgroup', subgroupId);
         const subgroupIndex = model.subgroups.indexOf(subgroup);
         Subgroup.deleteItem('subgroup', subgroupId).then(() => {
-          if (!itemsStore.activeItem('subgroup') && model.subgroups.length - 1) {
-            if(model.subgroups.get('firstObject').get('id') === subgroupId) {
-              locationData.saveLocation(undefined, model.subgroups.objectAt(subgroupIndex + 1).get('id'));
-            }else {
+          if (model.subgroups.length) {
+            if(!subgroupIndex && model.subgroups.length) {
+              locationData.saveLocation(undefined, model.subgroups.objectAt(subgroupIndex).get('id'));
+            }else if(subgroupIndex){
               locationData.saveLocation(undefined, model.subgroups.objectAt(subgroupIndex - 1).get('id'));
             }
           }else {
@@ -144,10 +144,10 @@ export default Controller.extend({
 
     toggleModal(type) {
       if(this.get('modal.open')) {
-        this.set('modal.open', false);
+        this.toggleProperty('modal.open');
         this.set('type', null);
       }else {
-        this.set('modal.open', true);
+        this.toggleProperty('modal.open')
         this.set('modal.type', type);
       }
     },

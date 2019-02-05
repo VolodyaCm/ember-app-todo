@@ -23,9 +23,9 @@ export default Component.extend({
           if (!itemsStore.activeItem('group')) {
             const group = groups.objectAt(groupIndex - 1);
             const subgroups = group.get('subgroups');
-            const subgroup = subgroups.get('firstObject');
+            const subgroup = subgroups.getWithDefault('firstObject', { id: null });
             const groupId = group.get('id');
-            const subgroupId = subgroup ? subgroup.get('id') : null;
+            const subgroupId = subgroup.id;
             itemsStore.changeState('group');
             itemsStore.changeState('subgroup');
             locationData.saveLocation(groupId, subgroupId);
@@ -41,8 +41,8 @@ export default Component.extend({
       itemsStore.changeState('group', false);
       locationData.saveLocation(groupId, null);
       model.subgroups.then(subgroups => {
-        const subgroup = subgroups.get('firstObject');
-        const subgroupId = subgroup ? subgroup.get('id') : null;
+        const subgroup = subgroups.getWithDefault('firstObject', { id: null });
+        const subgroupId = subgroup.id;
         itemsStore.changeState('subgroup', false);
         locationData.saveLocation(undefined, subgroupId);
       })
