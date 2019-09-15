@@ -1,0 +1,201 @@
+<div class="wrapper">
+  <nav id="sidebar" class="{{if menu "active"}}">
+    <div class="sidebar-header">
+      <h3>Todo</h3>
+      <strong>TD</strong>
+    </div>
+    <ul class="list-unstyled components">
+      <div class="row">
+        <div class="col">
+          <div class="card main-groups-list-block square scrollbar-pink bordered-pink thin">
+            <div class="card-body">
+              <li>
+                {{#each model.groups as |group|}}
+                  {{main-group-list-item 
+                    model=model
+                    group=group 
+                    menu=menu
+                  }}
+                {{/each}}
+              </li>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ul>
+    {{#if (subtract-unit model.groups.length 1)}}
+    <ul class="list-unstyled components">
+      <div class="row">
+        <div class="col">
+          <div class="card groups-list-block square scrollbar-pink bordered-pink thin">
+            <div class="card-body">
+              <li>
+                {{#each model.groups as |group|}}
+                  {{group-list-item
+                    model=model
+                    group=group
+                    menu=menu
+                  }}
+                {{/each}}
+              </li>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ul>
+    {{/if}}
+    <ul class="list-unstyled CTAs">
+      <div class="row task-controll-panel">
+        <div class="col">
+          {{input value=group class="form-control add-new-group-input add-new-task-input" aria-label="Recipient's username" aria-describedby="basic-addon2" placeholder="Add a group" keyDown=(action "addGroup")}}
+        </div>
+      </div>
+    </ul>
+    <ul class="list-unstyled CTAs">
+      <li>
+        <a href="#" class="article" onclick={{action "deleteCompletedTask"}}>
+          Delete completed tasks
+        </a>
+      </li>
+    </ul>
+    <ul class="list-unstyled CTAs">
+      <li onclick={{action "toggleModal" "import"}}>
+        <a href="#" class="article">Import</a>
+        {{#if modal.open}}
+          {{#modal-dialog
+            onClose=(action "toggleModal" "import")
+            targetAttachment="center"
+            translucentOverlay=true
+          }}
+            {{#if (check-modal-type modal.open modal.type "import")}}
+              {{import-data}}
+            {{/if}}
+            {{#if (check-modal-type modal.open modal.type "export")}}
+              {{export-data store=store}}
+            {{/if}}
+          {{/modal-dialog}}
+        {{/if}}
+      </li>
+      <li onclick={{action "toggleModal" "export"}}>
+        <a href="#" class="article">Export</a>
+      </li>
+      <a href="#" class="article" onclick={{action "log"}}>log</a>
+    </ul>
+  </nav>
+  <div id="content" class="{{unless menu "content-width"}}{{if menu "content-width-80"}}">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <button type="button" id="sidebarCollapse" class="btn btn-info" onclick={{action "toggleMenu"}}>
+          {{fa-icon "fas fa-align-left"}}
+          <span>Groups</span>
+        </button>
+        <button class="btn btn-dark d-inline-block d-lg-none ml-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"></button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="nav navbar-nav ml-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="#">Page</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Page</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Page</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Page</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="col-12 subgroup-list-block">
+      <div class="scrollmenu">
+        {{#each model.subgroups as |subgroup|}}
+          {{subgroup-list-item
+            subgroup=subgroup
+          }}
+        {{else}}
+          <span>no subgroups</span>
+        {{/each}}
+      </div>
+    </div>
+    <div class="container-fluid p-0">
+      <div class="row task-conteiner">
+        <div class="col-6 task-list-block mt-20">
+          <div class="card task-list-block-scroll square scrollbar-pink bordered-pink thin">
+            <div class="card-body">
+              {{#each model.tasks as |task|}}
+                {{task-list-item 
+                  task=task
+                }}
+              {{else}}
+                <span>no tasks</span>
+              {{/each}}
+            </div>
+          </div>
+        </div>
+        <div class="col-5 options">
+          <div class="row">
+            <div class="col">
+              <ul>
+                <li>
+                  <p>Groups: {{model.groups.length}}</p>
+                </li>
+              </ul>
+              <p class="fs-20 fw-b bg-e6e6e69c pl-1 br-3">Group: <span class="badge badge-warning">{{location.group.obj.group}}</span></p>
+              <ul>
+                <li>
+                  <p>Subgroups: {{model.subgroups.length}}</p>
+                </li>
+              </ul>
+            </div>
+          </div>
+          {{#if location.subgroup.key}}
+            <div class="row">
+              <div class="col">
+                <p class="fs-20 fw-b bg-e6e6e69c pl-1 br-3">Subgroup: <span class="badge badge-warning">{{location.subgroup.obj.subgroup}}</span></p>
+                <ul>
+                  <li>
+                    <p>Tasks: {{model.tasks.length}}</p>
+                  </li>
+                  <li>
+                    <p>Completed tasks: {{model.statistics.completedTasks}}</p>
+                  </li>
+                  <li>
+                    <p>Active tasks: {{model.statistics.activeTasks}}</p>
+                  </li>
+                </ul>
+                {{#unless location.subgroup.obj.main}}
+                  <div class="delete" class="btn btn-danger" onclick={{action "deleteSubgroup" location.subgroup.key}}>
+                    delete subgroup
+                  </div>
+                {{/unless}}
+              </div>
+            </div>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light controll-panel">
+      <div class="container-fluid">
+        <ul class="nav navbar-nav ml-auto w-50">
+          <li class="nav-item active w-100">
+            {{input value=subgroup class="form-control add-new-task-input" aria-label="Recipient's username" aria-describedby="basic-addon2" placeholder="Add a subgroup" keyDown=(action "addSubgroup")}}
+          </li>
+        </ul>
+        <ul class="nav navbar-nav ml-auto w-50">
+          <li class="nav-item active w-100">
+            <div class="input-group mb-3 task-input-group-append">
+              {{input value=task class="form-control add-new-task-input" aria-label="Recipient's username" aria-describedby="basic-addon2" placeholder="Add a task" keyDown=(action "pressEnter" (action "addTask"))}}
+              <div class="input-group-append">
+                <div class="add-new-task-btn">
+                  {{fa-icon "fal fa-chevron-circle-up" click=(action "addTask")}}
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+</div>
